@@ -2,7 +2,7 @@ from random import choice, randrange
 import PySimpleGUI as Psg
 
 Psg.theme("DarkGray1")
-dimension = 9  # must be odd!
+dimension = 15  # must be odd!
 entrance_point = (0, dimension - 2)
 exit_point = (dimension - 1, 1)
 compass = ("W", "N", "E", "S")
@@ -11,7 +11,7 @@ player_direction = 2  # compass - "E"
 tile_size = 25
 window_size = dimension * tile_size
 monster_rate = 10
-coin_rate = 4
+coin_rate = 12
 monster_counter = 0
 coin_counter = 0
 maze_level = 1
