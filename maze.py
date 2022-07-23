@@ -84,9 +84,9 @@ def draw_tile(x, y):
         elif updated_maze[y][x] == "S":
             field.DrawImage(filename="pictures/player_south.png", location=(x * tile_size, (y + 1) * tile_size))
         elif updated_maze[y][x] == "coin":
-            field.DrawImage(filename="pictures/coin.png", location=(x * tile_size, (y + 1) * tile_size))
+            field.DrawImage(filename="pictures/monster.png", location=(x * tile_size, (y + 1) * tile_size))
         elif updated_maze[y][x] == "monster":
-            field.DrawImage(filename="pictures/spider.png", location=(x * tile_size, (y + 1) * tile_size))
+            field.DrawImage(filename="pictures/coin.png", location=(x * tile_size, (y + 1) * tile_size))
 
 
 def update_map():
