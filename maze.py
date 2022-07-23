@@ -2,7 +2,7 @@ from random import choice, randrange
 import PySimpleGUI as Psg
 
 Psg.theme("DarkGray1")
-dimension = 19  # must be odd!
+dimension = 9  # must be odd!
 entrance_point = (0, dimension - 2)
 exit_point = (dimension - 1, 1)
 compass = ("W", "N", "E", "S")
@@ -14,6 +14,7 @@ monster_rate = 10
 coin_rate = 4
 monster_counter = 0
 coin_counter = 0
+maze_level = 1
 regen = False
 
 field = Psg.Graph(
@@ -23,7 +24,7 @@ field = Psg.Graph(
     background_color="Gray20")
 
 
-def maze_generation2():
+def maze_generator():
     carving_directions = ("West", "North")
     matrix = []
     row = []
@@ -61,8 +62,8 @@ def maze_generation2():
 def draw_map():
     for y in range(dimension):
         for x in range(dimension):
-            field.DrawImage(filename="pictures/fog.png", location=(x * tile_size, (y + 1) * tile_size))
-            # draw_tile(x, y)
+            field.DrawImage(filename="pictures/fog.png", location=(x * tile_size, (y + 1) * tile_size))  # displays fog
+            # draw_tile(x, y)  # cells without fog
 
 
 def draw_tile(x, y):
@@ -120,13 +121,14 @@ def update_map():
         draw_tile(player_position[0] - 1, player_position[1] - 1)
 
 
-generated_maze = maze_generation2()
+generated_maze = maze_generator()
 updated_maze = [a[:] for a in generated_maze]  # deepcopy
 updated_maze[player_position[1]][player_position[0]] = compass[player_direction]
 
 layout = [[field],
           [Psg.Text(f"Coins = {coin_counter}", key="-COINS-")],
-          [Psg.Text(f"Monsters = {monster_counter}", key="-MONSTERS-")]]
+          [Psg.Text(f"Monsters = {monster_counter}", key="-MONSTERS-")],
+          [Psg.Text(f"Maze level = {maze_level}", key="-LEVEL-")]]
 window = Psg.Window("Maze", layout, font="Courier", return_keyboard_events=True)
 timeout = 10
 
@@ -162,8 +164,10 @@ while True:
             if player_position[0] + 1 == dimension:
                 player_position = list(entrance_point)
                 player_direction = 2
-                generated_maze = maze_generation2()
+                generated_maze = maze_generator()
                 regen = True
+                maze_level += 1
+                window["-LEVEL-"].update(f"Maze level = {maze_level}")
             elif generated_maze[player_position[1]][player_position[0] + 1] \
                     in ("room", "coin", "monster", "exit"):
                 player_position[0] += 1
