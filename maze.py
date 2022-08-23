@@ -10,8 +10,10 @@ player_position = list(entrance_point)
 player_direction = 2  # compass - "E"
 tile_size = 25
 window_size = dimension * tile_size
-monster_rate = 10
-coin_rate = 12
+monster_rate = 8
+coin_rate = 7
+health_rate = 2
+treasure_rate = 3
 monster_counter = 0
 coin_counter = 0
 maze_level = 1
@@ -30,20 +32,20 @@ def maze_generator():
     row = []
     for y in range(dimension):
         for x in range(dimension):
-            row.append("wall")
+            row.append("wall")  # walls everywhere
         matrix.append(row)
         row = []
     for y in range(1, dimension - 1, 2):
         for x in range(1, dimension - 1, 2):
             matrix[y][x] = "room"
-            if x == 1 and y != dimension - 2:
+            if x == 1 and y != dimension - 2:  # next to the right edge can't carve to West
                 matrix[y + 1][x] = "room"
-            elif y == dimension - 2 and x != 1:
+            elif y == dimension - 2 and x != 1:  # next to the top edge can't carve to North
                 matrix[y][x-1] = "room"
-            elif x == 1 and y == dimension - 2:
+            elif x == 1 and y == dimension - 2:  # top right cell - nothing to carve
                 pass
             else:
-                if choice(carving_directions) == "West":
+                if choice(carving_directions) == "West":  # carving selection - West or North
                     matrix[y + 1][x] = "room"
                 else:
                     matrix[y][x-1] = "room"
@@ -56,6 +58,10 @@ def maze_generator():
                     matrix[y][x] = "monster"
                 elif not randrange(int(100 / coin_rate)):
                     matrix[y][x] = "coin"
+                elif not randrange(int(100 / health_rate)):
+                    matrix[y][x] = "health"
+                elif not randrange(int(100 / treasure_rate)):
+                    matrix[y][x] = "treasure"
     return matrix
 
 
@@ -83,10 +89,14 @@ def draw_tile(x, y):
             field.DrawImage(filename="pictures/player_east.png", location=(x * tile_size, (y + 1) * tile_size))
         elif updated_maze[y][x] == "S":
             field.DrawImage(filename="pictures/player_south.png", location=(x * tile_size, (y + 1) * tile_size))
-        elif updated_maze[y][x] == "coin":
-            field.DrawImage(filename="pictures/monster.png", location=(x * tile_size, (y + 1) * tile_size))
         elif updated_maze[y][x] == "monster":
+            field.DrawImage(filename="pictures/monster.png", location=(x * tile_size, (y + 1) * tile_size))
+        elif updated_maze[y][x] == "coin":
             field.DrawImage(filename="pictures/coin.png", location=(x * tile_size, (y + 1) * tile_size))
+        elif updated_maze[y][x] == "health":
+            field.DrawImage(filename="pictures/health.png", location=(x * tile_size, (y + 1) * tile_size))
+        elif updated_maze[y][x] == "treasure":
+            field.DrawImage(filename="pictures/treasure.png", location=(x * tile_size, (y + 1) * tile_size))
 
 
 def update_map():
@@ -95,9 +105,13 @@ def update_map():
         monster_counter += 1
         window["-MONSTERS-"].update(f"Monsters = {monster_counter}")
         generated_maze[player_position[1]][player_position[0]] = "room"
-    if generated_maze[player_position[1]][player_position[0]] == "coin":
+    elif generated_maze[player_position[1]][player_position[0]] == "coin":
         coin_counter += 1
         window["-COINS-"].update(f"Coins = {coin_counter}")
+        generated_maze[player_position[1]][player_position[0]] = "room"
+    elif generated_maze[player_position[1]][player_position[0]] == "health":
+        generated_maze[player_position[1]][player_position[0]] = "room"
+    elif generated_maze[player_position[1]][player_position[0]] == "treasure":
         generated_maze[player_position[1]][player_position[0]] = "room"
     draw_tile(player_position[0], player_position[1])
     draw_tile(player_position[0], player_position[1] + 1)
@@ -151,14 +165,12 @@ while True:
         if player_direction == 4:
             player_direction = 0
     if event == "Up:38":
-        if compass[player_direction] == "N" and \
-                generated_maze[player_position[1] + 1][player_position[0]] in ("room", "coin", "monster"):
+        if compass[player_direction] == "N" and generated_maze[player_position[1] + 1][player_position[0]] != "wall":
             player_position[1] += 1
-        elif compass[player_direction] == "W" and \
-                generated_maze[player_position[1]][player_position[0] - 1] in ("room", "coin", "monster"):
+        elif compass[player_direction] == "W" and generated_maze[player_position[1]][player_position[0] - 1]\
+                not in ("wall", "entrance"):
             player_position[0] -= 1
-        elif compass[player_direction] == "S" and \
-                generated_maze[player_position[1] - 1][player_position[0]] in ("room", "coin", "monster"):
+        elif compass[player_direction] == "S" and generated_maze[player_position[1] - 1][player_position[0]] != "wall":
             player_position[1] -= 1
         elif compass[player_direction] == "E":
             if player_position[0] + 1 == dimension:
@@ -168,8 +180,7 @@ while True:
                 regen = True
                 maze_level += 1
                 window["-LEVEL-"].update(f"Maze level = {maze_level}")
-            elif generated_maze[player_position[1]][player_position[0] + 1] \
-                    in ("room", "coin", "monster", "exit"):
+            elif generated_maze[player_position[1]][player_position[0] + 1] != "wall":
                 player_position[0] += 1
 
     updated_maze = [a[:] for a in generated_maze]  # deepcopy
