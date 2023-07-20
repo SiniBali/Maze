@@ -150,7 +150,7 @@ def draw_player(position, r_hand, l_hand, size):
     screen.blit(player, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
     screen.blit(r_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
     screen.blit(l_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
-    if darkness:
+    if darkness and size == 1:
         screen.blit(mask_surf, (x * tile_size - 128, y * tile_size + info_panel_height - 128))
 
 
@@ -249,7 +249,7 @@ def shopping():
                     screen.blit(wall_surf, (x * tile_size, (y + 1) * tile_size))
             pygame.draw.rect(screen, "brown", (0, tile_size, WIDTH, 7 * tile_size), 3)
             tile = pygame.transform.scale(tile_surf, (32 * 3, 32 * 3))
-            screen.blit(tile, (12 * tile_size, tile_size + info_panel_height))
+            screen.blit(tile, (11 * tile_size, tile_size + info_panel_height))
             screen.blit(tile, (15 * tile_size, tile_size + info_panel_height))
             printer("Dear adventurer, welcome in my tiny shop. Please select (SPACE):", (10, tile_size * 2),
                     highlighted_font, "lightblue")
@@ -281,16 +281,17 @@ def shopping():
                         r_hand_surf = right_hand[index]
                     if element[0] == wears[0]:
                         l_hand_surf = left_hand[index]
+                new_r_hand_surf = r_hand_surf
+                new_l_hand_surf = l_hand_surf
                 if selected < 3:
                     for index, element in enumerate(gears):
                         if element[0] == shop_list[selected][0]:
                             if shop_list[selected][1][3] == 0:
                                 new_r_hand_surf = right_hand[index]
-                                new_l_hand_surf = l_hand_surf
                             elif shop_list[selected][1][3] == 1:
-                                new_r_hand_surf = r_hand_surf
                                 new_l_hand_surf = left_hand[index - 12]
                             break
+
             draw_player((11, 1), new_r_hand_surf, new_l_hand_surf, 3)
             draw_player((15, 1), r_hand_surf, l_hand_surf, 3)
             pygame.display.update()
