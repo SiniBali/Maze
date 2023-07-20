@@ -1,47 +1,13 @@
-import pygame
 from maze_generator import *
 from data import *
+from media_load import *
 import random
+import pygame
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT + info_panel_height))
 pygame.display.set_caption("Maze of fear")
 clock = pygame.time.Clock()
-wall_surf = pygame.image.load("pictures/wall.png")
-tile_surf = pygame.image.load("pictures/tile.png")
-entrance_surf = pygame.image.load("pictures/entrance.png")
-exit_surf = pygame.image.load("pictures/exit.png")
-grid_surf = pygame.image.load("pictures/grid.png")
-player_surf = pygame.image.load("pictures/player.png")
-monster_surf = pygame.image.load("pictures/monster.png")
-boss_surf = pygame.image.load("pictures/boss.png")
-coin_surf = pygame.image.load("pictures/coin.png")
-health_surf = pygame.image.load("pictures/health.png")
-chest_surf = pygame.image.load("pictures/chest.png")
-shop_surf = pygame.image.load("pictures/shop.png")
-black_surf = pygame.image.load("pictures/black.png")
-mask_surf = pygame.image.load("pictures/mask.png")
-maze_surf = pygame.image.load("pictures/maze.png")
-rat_surf = pygame.image.load("pictures/rat.png")
-tree_surf = pygame.image.load("pictures/tree.png")
-
-pygame.mixer.music.load("sounds/menu.wav")
-grid_open_sound = pygame.mixer.Sound("sounds/grid_open.wav")
-grid_slam_sound = pygame.mixer.Sound("sounds/grid_slam.wav")
-steps_sound = pygame.mixer.Sound("sounds/steps.wav")
-coin_sound = pygame.mixer.Sound("sounds/coin.wav")
-chest_sound = pygame.mixer.Sound("sounds/chest.wav")
-health_sound = pygame.mixer.Sound("sounds/health.wav")
-monster_sound = pygame.mixer.Sound("sounds/monster.wav")
-boss_sound = pygame.mixer.Sound("sounds/boss.wav")
-shop_sound = pygame.mixer.Sound("sounds/shop.wav")
-new_level_sound = pygame.mixer.Sound("sounds/new_level.wav")
-rat_sound = pygame.mixer.Sound("sounds/rat.wav")
-chop_sound = pygame.mixer.Sound("sounds/chop.wav")
-
-normal_font = pygame.font.Font(None, 23)
-highlighted_font = pygame.font.Font(None, 26)
-menu_font = pygame.font.Font(None, 40)
 
 
 def draw_map():
@@ -143,9 +109,8 @@ def update_map():
     elif maze[x][y] == "with_boss":
         screen.blit(tile_surf, (x * tile_size, y * tile_size + info_panel_height))
         screen.blit(boss_surf, (x * tile_size + 8, y * tile_size + info_panel_height))
-        screen.blit(player_surf, (x * tile_size - 8, y * tile_size + info_panel_height))
-        # boss_defeated = True
-        # grid_open_sound.play()
+        boss_defeated = True
+        grid_open_sound.play()
     elif maze[x][y] == "coin":
         player_gold += maze_level
         found_animation(coin_surf, coin_sound)
@@ -164,17 +129,27 @@ def update_map():
         screen.blit(shop_surf, (tile_size * player_position[0], tile_size * player_position[1] + info_panel_height))
 
 
-def draw_player(position):
+def draw_player(position, r_hand, l_hand, size):
     x, y = position[0], position[1]
+    player = player_surf
     if position[0] == 0:
-        screen.blit(player_surf, (x * tile_size - 6, y * tile_size + info_panel_height - 18))
+        x_dif, y_dif = -6, - 18
     elif position[0] == dimension - 1:
-        player_chopped_surf = pygame.transform.chop(player_surf, (21, 21, 32, 32))
-        screen.blit(player_chopped_surf, (x * tile_size + 7, y * tile_size + info_panel_height + 7))
+        x_dif, y_dif = 7, 7
+        player = pygame.transform.chop(player_surf, (21, 21, 32, 32))
+        r_hand = pygame.transform.chop(r_hand, (21, 21, 32, 32))
+        l_hand = pygame.transform.chop(l_hand, (21, 21, 32, 32))
     elif maze[x][y] == "with_boss":
-        pass
+        x_dif, y_dif = -8, 0
     else:
-        screen.blit(player_surf, (x * tile_size, y * tile_size + info_panel_height))
+        x_dif, y_dif = 0, 0
+    if size != 1:
+        player = pygame.transform.scale(player, (32 * size, 32 * size))
+        r_hand = pygame.transform.scale(r_hand, (32 * size, 32 * size))
+        l_hand = pygame.transform.scale(l_hand, (32 * size, 32 * size))
+    screen.blit(player, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
+    screen.blit(r_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
+    screen.blit(l_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
     if darkness:
         screen.blit(mask_surf, (x * tile_size - 128, y * tile_size + info_panel_height - 128))
 
@@ -220,7 +195,7 @@ def found_animation(item, sound):
         big_surf = pygame.transform.scale(item, (scale_x, scale_y))
         big_rect = big_surf.get_rect(center=(x + tile_size / 2, y + tile_size / 2))
         big_surf.set_alpha(int(255 - 255 * (i / 9)))
-        draw_player((player_position[0], player_position[1]))
+        draw_player((player_position[0], player_position[1]), wooden_buckler_surf, rusty_dagger_surf, 1)
         screen.blit(big_surf, big_rect)
         pygame.display.update()
         clock.tick(60)
@@ -228,8 +203,11 @@ def found_animation(item, sound):
 
 def new_shop_list():
     list_elements = []
-    for i in range(3):
-        list_elements.append(choice(list(gears.items())))
+    while len(list_elements) != 3:
+        element = choice(gears)
+        if element not in list_elements:
+            list_elements.append(element)
+    print(list_elements)
     return list_elements
 
 
@@ -245,9 +223,9 @@ def shopping():
             if shop_event.type == pygame.KEYDOWN:
                 if shop_event.key == pygame.K_SPACE:
                     if selected < 3 and player_gold > shop_list[selected][1][0]:
-                        body_place = shop_list[selected][1][4]
-                        wore = gears[wears[body_place]]
-                        print(wore)
+                        body_place = shop_list[selected][1][3]
+                        """wore = gears.index(wears[body_place])
+                        print(wore)"""
                         update_attributes()
                         player_gold -= shop_list[selected][1][0]
                     elif selected == 3 and player_gold >= 30:
@@ -270,12 +248,15 @@ def shopping():
                 for y in range(7):
                     screen.blit(wall_surf, (x * tile_size, (y + 1) * tile_size))
             pygame.draw.rect(screen, "brown", (0, tile_size, WIDTH, 7 * tile_size), 3)
+            tile = pygame.transform.scale(tile_surf, (32 * 3, 32 * 3))
+            screen.blit(tile, (12 * tile_size, tile_size + info_panel_height))
+            screen.blit(tile, (15 * tile_size, tile_size + info_panel_height))
             printer("Dear adventurer, welcome in my tiny shop. Please select (SPACE):", (10, tile_size * 2),
-                    normal_font, "lightblue")
+                    highlighted_font, "lightblue")
             if quest_state == "not in progress":
                 quest_text = f"{quest} / reward: {maze_level * 15} gold"
             elif quest_state == "accepted":
-                quest_text = "Please come back to me if you finished the job."
+                quest_text = f"{quest} / Accepted"
             else:
                 quest_text = f"Good job! Here is your {maze_level * 15} gold"
                 player_gold += maze_level * 15
@@ -289,15 +270,29 @@ def shopping():
             for number, item in enumerate(shop_items):
                 if number == selected:
                     font, col = highlighted_font, "green"
-                    if selected < 3:
-                        if player_gold < shop_list[selected][1][0]:
-                            col = "red"
-                    elif selected == 3:
-                        if player_gold < 30:
-                            col = "red"
+                    if selected < 3 and player_gold < shop_list[selected][1][0] or\
+                            selected == 3 and player_gold < 30:
+                        col = "red"
                 else:
                     font, col = normal_font, "white"
                 printer(item[0], item[1], font, col)
+                for index, element in enumerate(gears):
+                    if element[0] == wears[0]:
+                        r_hand_surf = right_hand[index]
+                    if element[0] == wears[0]:
+                        l_hand_surf = left_hand[index]
+                if selected < 3:
+                    for index, element in enumerate(gears):
+                        if element[0] == shop_list[selected][0]:
+                            if shop_list[selected][1][3] == 0:
+                                new_r_hand_surf = right_hand[index]
+                                new_l_hand_surf = l_hand_surf
+                            elif shop_list[selected][1][3] == 1:
+                                new_r_hand_surf = r_hand_surf
+                                new_l_hand_surf = left_hand[index - 12]
+                            break
+            draw_player((11, 1), new_r_hand_surf, new_l_hand_surf, 3)
+            draw_player((15, 1), r_hand_surf, l_hand_surf, 3)
             pygame.display.update()
             """
             elif confirmation == "n":
@@ -321,10 +316,11 @@ def printer(text, pos, font, col):
 def update_attributes():
     global player_attack, player_defense, additional_hp
     player_attack, player_defense, additional_hp = 0, 0, 0
-    for item in list(wears.values()):
-        player_attack += gears[item][1]
+    for item in wears:
+        pass
+        """player_attack += gears[item][1]
         player_defense += gears[item][2]
-        additional_hp += gears[item][3]
+        additional_hp += gears[item][3]"""
 
 
 def maze_fade_in():
@@ -381,8 +377,6 @@ def main_menu():
 
 def quest_checker(number):
     pass
-
-
 
 
 quest = choice(quests)
@@ -442,7 +436,7 @@ while True:
 
     draw_map()
     update_map()
-    draw_player(player_position)
+    draw_player(player_position, wooden_buckler_surf, rusty_dagger_surf, 1)
     info_panel()
     update_attributes()
     pygame.display.update()
