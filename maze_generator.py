@@ -74,7 +74,7 @@ def maze_generator():
     if fill_items:
         item_placement(matrix, monster_amount, "monster")
         item_placement(matrix, coin_amount, "coin")
-        item_placement(matrix, health_amount, "health")
+        item_placement(matrix, potion_amount, "health")
         item_placement(matrix, treasure_amount, "treasure")
         item_placement(matrix, shop_amount, "shop")
         item_placement(matrix, boss_amount, "boss")
