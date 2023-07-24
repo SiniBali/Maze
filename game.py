@@ -167,10 +167,9 @@ def found_animation(item, sound):
 
 
 def new_shop_list():
-    print(maze_level)
-    list_elements = (gears[maze_level],
+    list_elements = [gears[maze_level],
                      gears[11 + maze_level],
-                     gears[22 + maze_level])
+                     gears[22 + maze_level]]
 
     return list_elements
 
@@ -183,14 +182,14 @@ def shopping():
         for shop_event in pygame.event.get():
             if shop_event.type == pygame.QUIT:
                 pygame.quit()
+            shop_text = []
             if shop_event.type == pygame.KEYDOWN:
                 if shop_event.key == pygame.K_SPACE:
-                    if selected < 3 and player_gold >= shop_list[selected][1][0]:
+                    if selected < 3 and player_gold >= shop_list[selected][1][0] \
+                            and wears[selected] != shop_list[selected]:
                         wears[selected] = shop_list[selected]
                         update_attributes()
                         player_gold -= shop_list[selected][1][0]
-                        shop_items[selected] = (f"Buy {shop_list[0][0]} / already bought", (10, tile_size * 3))
-                        print(shop_items)
                     elif selected == 3 and player_gold >= player_max_hp - player_hp:
                         player_hp = player_max_hp
                         player_gold -= player_max_hp - player_hp
@@ -205,7 +204,6 @@ def shopping():
                             quest = choice(quests)
                             quest_item_quantity = int(randrange(2, 7) + maze_level * 2)
                     elif selected == 5:
-                        in_shop = False
                         shop_sound.play()
                         outside = True
                 if shop_event.key == pygame.K_DOWN:
@@ -223,24 +221,31 @@ def shopping():
             screen.blit(tile, (15 * tile_size, tile_size + info_panel_height))
             printer("Dear adventurer, welcome in my tiny shop.", (10, tile_size * 2), highlighted_font, "lightblue")
             if quest_state == "not in progress":
-                quest_text = f"{quest[0]} please bring {quest_item_quantity} {quest[1]}s/ reward: {maze_level * 15} gold"
+                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: {maze_level * 15} gold"
             elif quest_state == "accepted":
-                quest_text = f"{quest[0]} please bring {quest_item_quantity} {quest[1]}s / Accepted"
+                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / Accepted"
             else:
                 quest_text = f"Good job! Here is your {maze_level * 15} gold"
-            shop_items = [(f"Buy {shop_list[0][0]} / {shop_list[0][1][0]} gold", (10, tile_size * 3)),
-                          (f"Buy {shop_list[1][0]} / {shop_list[1][1][0]} gold", (10, tile_size * 4)),
-                          (f"Buy {shop_list[2][0]} / {shop_list[2][1][0]} gold", (10, tile_size * 5)),
-                          (f"For a small fee, I can heal you / {player_max_hp-player_hp} gold", (10, tile_size * 6)),
-                          (quest_text, (10, tile_size * 7)),
-                          ("You leave my shop. Good luck on your journey!", (10, tile_size * 8))]
-            for number, item in enumerate(shop_items):
+            for i in range(3):
+                if wears[i] == shop_list[i]:
+                    shop_text.append((f"You already bought {shop_list[i][0]}", (10, tile_size * (i + 3))))
+                else:
+                    shop_text.append((f"Buy {shop_list[i][0]} / {shop_list[i][1][0]} gold", (10, tile_size * (i + 3))))
+
+            shop_text.append((f"For a small fee, I can heal you / {player_max_hp-player_hp} gold", (10, tile_size * 6)))
+            shop_text.append((quest_text, (10, tile_size * 7)))
+            shop_text.append(("Good luck on your journey!", (10, tile_size * 8)))
+
+            for number, item in enumerate(shop_text):
                 if number == selected:
                     font, col = highlighted_font, "green"
-                    if selected < 3 and player_gold < shop_list[selected][1][0] or\
-                            selected == 3 and player_gold < 30:
+                    if selected < 3 and (player_gold < shop_list[selected][1][0]
+                                         or wears[selected] == shop_list[selected])\
+                            or selected == 3 and (player_gold < player_max_hp - player_hp
+                                                  or player_hp == player_max_hp):
                         col = "red"
                 else:
+                    print(len(shop_text))
                     font, col = normal_font, "white"
                 printer(item[0], item[1], font, col)
                 r_hand_surf = wears[0][2]
@@ -391,6 +396,7 @@ while True:
                     quest_state = "not in progress"
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(2, 7) + maze_level * 2)
+                    shop_list = new_shop_list()
                     for y in range(1, dimension - 1, 2):
                         if maze[0][y] == "entrance":
                             player_position = [0, y]

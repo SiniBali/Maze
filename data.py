@@ -99,6 +99,7 @@ gears = (("Rusty Dagger", (0, 0, 0, 0), rusty_dagger_surf),
          ("Rune Engraved", (12000, 2, 0, 1), rune_engraved_surf),
          ("Holy Aegis", (18000, 2, 0, 1), holy_aegis_surf),
          ("Rag suit", (0, 0, 0, 2), rag_suit_surf),
+         ("Linen Cloth", (4, 2, 0, 2), linen_cloth_surf),
          ("Linen Cloth", (4, 2, 0, 2), linen_cloth_surf))
 
 wears = [gears[0],
