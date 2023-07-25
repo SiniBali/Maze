@@ -9,6 +9,12 @@ pygame.display.set_caption("Maze of fear")
 clock = pygame.time.Clock()
 
 
+def draw_rect_alpha(surface, color, rect):
+    shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
+    pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
+    surface.blit(shape_surf, rect)
+
+
 def draw_map():
     if not darkness:
         r1, r2, r3, r4 = 0, dimension, 0, dimension
@@ -31,8 +37,7 @@ def draw_map():
         else:
             k = 4
         r1, r2, r3, r4 = h + player_position[0], i + player_position[0] + 1, \
-            j + player_position[1], k + player_position[1] + 1
-        print(r1, r2, r3, r4)
+                         j + player_position[1], k + player_position[1] + 1
     for x in range(r1, r2):
         for y in range(r3, r4):
             place = (x * tile_size, y * tile_size + info_panel_height)
@@ -75,6 +80,7 @@ def update_map():
     if maze[x][y] == "monster":
         found_animation(monster_surf, monster_sound)
         maze[x][y] = "room"
+        monster_fight()
     elif maze[x][y] == "boss":
         found_animation(boss_surf, boss_sound)
         boss_defeated = True
@@ -144,10 +150,13 @@ def info_panel():
     if maze[player_position[0]][player_position[1]] == "boss":
         printer("Press SPACE to fight with boss", (10, tile_size), highlighted_font, "red")
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
-        printer("Press SPACE to enter shop", (10, tile_size), highlighted_font, "lightblue")
+        printer("Press SPACE to enter shop", (10, tile_size), highlighted_font, "purple")
     else:
         printer(f"Gold: {player_gold}     Health: {player_hp} / {player_max_hp}     Maze level: {maze_level}     "
-                f"ATK: {player_attack}     DEF: {player_defense}", (10, 30), highlighted_font, "White")
+                f"ATK: {player_attack}     DEF: {player_defense}", (10, tile_size), highlighted_font, "white")
+    if quest_state in ("accepted", "done"):
+        printer(f"{quest_item_quantity}", (WIDTH - 34, tile_size), highlighted_font, "white")
+        screen.blit(quest[2], (WIDTH - 70, 0))
 
 
 def found_animation(item, sound):
@@ -219,9 +228,10 @@ def shopping():
             pygame.draw.rect(screen, "brown", (0, tile_size, WIDTH, 7 * tile_size), 3)
             tile = pygame.transform.scale(tile_surf, (32 * 3, 32 * 3))
             screen.blit(tile, (15 * tile_size, tile_size + info_panel_height))
-            printer("Dear adventurer, welcome in my tiny shop.", (10, tile_size * 2), highlighted_font, "lightblue")
+            printer("Dear adventurer, welcome in my tiny shop.", (10, tile_size * 2), highlighted_font, "purple")
             if quest_state == "not in progress":
-                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: {maze_level * 15} gold"
+                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: " \
+                             f"{maze_level * 15} gold"
             elif quest_state == "accepted":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / Accepted"
             else:
@@ -232,7 +242,8 @@ def shopping():
                 else:
                     shop_text.append((f"Buy {shop_list[i][0]} / {shop_list[i][1][0]} gold", (10, tile_size * (i + 3))))
 
-            shop_text.append((f"For a small fee, I can heal you / {player_max_hp-player_hp} gold", (10, tile_size * 6)))
+            shop_text.append(
+                (f"For a small fee, I can heal you / {player_max_hp - player_hp} gold", (10, tile_size * 6)))
             shop_text.append((quest_text, (10, tile_size * 7)))
             shop_text.append(("Good luck on your journey!", (10, tile_size * 8)))
 
@@ -240,41 +251,27 @@ def shopping():
                 if number == selected:
                     font, col = highlighted_font, "green"
                     if selected < 3 and (player_gold < shop_list[selected][1][0]
-                                         or wears[selected] == shop_list[selected])\
+                                         or wears[selected] == shop_list[selected]) \
                             or selected == 3 and (player_gold < player_max_hp - player_hp
                                                   or player_hp == player_max_hp):
                         col = "red"
                 else:
-                    print(len(shop_text))
                     font, col = normal_font, "white"
                 printer(item[0], item[1], font, col)
                 r_hand_surf = wears[0][2]
                 l_hand_surf = wears[1][2]
                 body_surf = wears[2][2]
                 if selected < 3:
-                    for index, gear in enumerate(gears):
-                        if gear == shop_list[selected]:
-                            if shop_list[selected][1][3] == 0:
-                                r_hand_surf = shop_list[selected][2]
-                            elif shop_list[selected][1][3] == 1:
-                                l_hand_surf = shop_list[selected][2]
-                            elif shop_list[selected][1][3] == 2:
-                                body_surf = shop_list[selected][2]
-                            break
+                    if selected == 0:
+                        r_hand_surf = shop_list[selected][2]
+                    elif selected == 1:
+                        l_hand_surf = shop_list[selected][2]
+                    elif selected == 2:
+                        body_surf = shop_list[selected][2]
                     screen.blit(tile, (11 * tile_size, tile_size + info_panel_height))
                     draw_player((11, 1), r_hand_surf, l_hand_surf, body_surf, 3)
             draw_player((15, 1), wears[0][2], wears[1][2], wears[2][2], 3)
             pygame.display.update()
-            """
-            elif confirmation == "n":
-                in_shop = False            
-                selected = int(input()) - 1
-                body_place = shop_list[selected][1][4]
-                wore = gears[wears[body_place]]
-                print(f"{shop_list[selected][0]} ({wears[body_place]}). Buy(y/n)?")
-                print(f"Attack {shop_list[selected][1][1]} ({wore[1]})")
-                print(f"Defense {shop_list[selected][1][2]} ({wore[2]})")
-                print(f"Health {shop_list[selected][1][3]} ({wore[3]})")"""
     clock.tick(60)
 
 
@@ -288,10 +285,9 @@ def update_attributes():
     global player_attack, player_defense, additional_hp
     player_attack, player_defense, additional_hp = 0, 0, 0
     for item in wears:
-        pass
-        """player_attack += gears[item][1]
-        player_defense += gears[item][2]
-        additional_hp += gears[item][3]"""
+        player_attack += item[1][1]
+        player_defense += item[1][2]
+        additional_hp += item[1][3]
 
 
 def maze_fade_in():
@@ -354,6 +350,60 @@ def quest_item_placing(maze, number, type):
         if maze[random_x][random_y] == "room":
             maze[random_x][random_y] = type
             counter += 1
+
+
+def monster_fight():
+    value = 1
+    counter = 0
+    state = "attack"
+    finish = False
+    while not finish:
+        if counter == 60:
+            counter = 0
+            value = 1
+        value = (value * 1.1)
+        counter += 1
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                screen.blit(tile_surf, (tile_size * (player_position[0] + i),
+                                        tile_size * (player_position[1] + j) + info_panel_height))
+        draw_player((player_position[0] - 1, player_position[1]),
+                    wears[0][2], wears[1][2], wears[2][2], 1)
+        screen.blit(monster_surf, ((tile_size * (player_position[0] + 1)),
+                                   tile_size * (player_position[1]) + info_panel_height))
+        if state == "attack":
+            draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
+                                                        tile_size * (player_position[1] - 1) + info_panel_height,
+                                                        (value / 304) * 3 * tile_size, 3 * tile_size)))
+        elif state == "defence":
+            draw_rect_alpha(screen, (0, 255, 0, 100), ((tile_size * ((player_position[0] + 2) - (value / 304) * 3)+1,
+                                                        tile_size * (player_position[1] - 1) + info_panel_height,
+                                                        (value / 304) * 3 * tile_size, 3 * tile_size)))
+        pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
+                                            tile_size * (player_position[1] - 1) + info_panel_height,
+                                            3 * tile_size, 3 * tile_size), 3)
+
+        for shop_event in pygame.event.get():
+            if shop_event.type == pygame.QUIT:
+                pygame.quit()
+            if shop_event.type == pygame.KEYDOWN:
+                if shop_event.key == pygame.K_SPACE:
+                    if state == "attack":
+                        percent = int(100 * value / 304)
+                        print(f"attack: {percent}%")
+                        state = "defence"
+                        counter = 0
+                        value = 1
+                    elif state == "defence":
+                        percent = int(100 * value / 304)
+                        print(f"attack: {percent}%")
+                        state = "attack"
+                        counter = 0
+                        value = 1
+                """else:
+                        finish = True"""
+        pygame.display.update()
+        clock.tick(60)
 
 
 quest = choice(quests)

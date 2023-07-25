@@ -7,8 +7,6 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-BG_COLOR = "grey30"
-FONT_COLOR = "white"
 monster_amount = 5
 boss_amount = 1
 coin_amount = 12
@@ -78,7 +76,7 @@ linen_cloth_surf = pygame.image.load("pictures/linen_cloth.png")
 # item parameters: price, attack, defense, place (0: right hand, 1: left hand, 2: head), surf
 gears = (("Rusty Dagger", (0, 0, 0, 0), rusty_dagger_surf),
          ("Oak Staff", (5, 2, 0, 0), oak_staff_surf),
-         ("Iron Mace", (15, 2, 0, 0), iron_mace_surf),
+         ("Iron Mace", (15, 5, 0, 0), iron_mace_surf),
          ("Steel Sword", (40, 2, 0, 0), steel_sword_surf),
          ("Shadow Blade", (120, 2, 0, 0), shadow_blade_surf),
          ("Flame Axe", (300, 2, 0, 0), flame_axe_surf),
@@ -88,8 +86,8 @@ gears = (("Rusty Dagger", (0, 0, 0, 0), rusty_dagger_surf),
          ("Holy Hammer", (8500, 2, 0, 0), holy_hammer_surf),
          ("Dragon Lance", (15000, 2, 0, 1), dragon_lance_surf),
          ("Rusty plate", (0, 0, 0, 0), rusty_plate_surf),
-         ("Wooden Buckler", (3, 2, 0, 1), wooden_buckler_surf),
-         ("Iron Shield", (12, 2, 0, 1), iron_shield_surf),
+         ("Wooden Buckler", (3, 0, 2, 1), wooden_buckler_surf),
+         ("Iron Shield", (12, 0, 6, 1), iron_shield_surf),
          ("Bull Shield", (60, 2, 0, 1), bull_shield_surf),
          ("Light Barrier", (420, 2, 0, 1), light_barrier_surf),
          ("Crystal Tower", (1100, 2, 0, 1), crystal_tower_surf),
@@ -107,7 +105,7 @@ wears = [gears[0],
          gears[22]]
 
 quests = (("Too many rats are here.", "rat", rat_surf),
-          ("My wife's pearls rolled apart.", "pearl", pearl_surf),
+          ("My pearls are rolled away.", "pearl", pearl_surf),
           ("This rooms are so cold.", "log", log_surf))
 
 pygame.mixer.music.load("sounds/menu.wav")
