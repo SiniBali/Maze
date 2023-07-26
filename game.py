@@ -118,7 +118,7 @@ def update_map():
 def draw_player(position, r_hand, l_hand, body, size):
     x, y = position[0], position[1]
     player = player_surf
-    if position[0] == 0:
+    if position[0] == 0 and maze[x][y] == "entrance":
         x_dif, y_dif = -6, - 18
     elif position[0] == dimension - 1:
         x_dif, y_dif = 7, 7
@@ -282,12 +282,12 @@ def printer(text, pos, font, col):
 
 
 def update_attributes():
-    global player_attack, player_defense, additional_hp
-    player_attack, player_defense, additional_hp = 0, 0, 0
+    global player_attack, player_defense, player_max_hp
+    player_attack, player_defense, player_max_hp = 0, 0, 0
     for item in wears:
         player_attack += item[1][1]
         player_defense += item[1][2]
-        additional_hp += item[1][3]
+        player_max_hp += item[1][3]
 
 
 def maze_fade_in():
@@ -353,11 +353,16 @@ def quest_item_placing(maze, number, type):
 
 
 def monster_fight():
+    global player_hp
+    monster_health = 12
+    print(f"monster health = {monster_health}")
+    monster_def = 12
+    monster_atk = 6
     value = 1
     counter = 0
     state = "attack"
-    finish = False
-    while not finish:
+
+    while state not in ("win", "defeated"):
         if counter == 60:
             counter = 0
             value = 1
@@ -367,41 +372,64 @@ def monster_fight():
             for j in range(-1, 2):
                 screen.blit(tile_surf, (tile_size * (player_position[0] + i),
                                         tile_size * (player_position[1] + j) + info_panel_height))
+        if state == "attack":
+            printer("ATK power", (tile_size * player_position[0] - 24,
+                                  tile_size * player_position[1] + 92), normal_font, "red")
+            draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
+                                                        tile_size * (player_position[1] - 1) + info_panel_height + 48,
+                                                        (value / 304) * 3 * tile_size, 48)))
+        elif state == "defence":
+            draw_rect_alpha(screen, (0, 255, 0, 100), ((tile_size * ((player_position[0] + 2) - (value / 304) * 3) + 1,
+                                                        tile_size * (player_position[1] - 1) + info_panel_height,
+                                                        (value / 304) * 3 * tile_size, 48)))
+            printer("DEF power", ((tile_size * player_position[0] - 24,
+                                   tile_size * player_position[1] + 30)), normal_font, "green")
         draw_player((player_position[0] - 1, player_position[1]),
                     wears[0][2], wears[1][2], wears[2][2], 1)
         screen.blit(monster_surf, ((tile_size * (player_position[0] + 1)),
                                    tile_size * (player_position[1]) + info_panel_height))
-        if state == "attack":
-            draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
-                                                        tile_size * (player_position[1] - 1) + info_panel_height,
-                                                        (value / 304) * 3 * tile_size, 3 * tile_size)))
-        elif state == "defence":
-            draw_rect_alpha(screen, (0, 255, 0, 100), ((tile_size * ((player_position[0] + 2) - (value / 304) * 3)+1,
-                                                        tile_size * (player_position[1] - 1) + info_panel_height,
-                                                        (value / 304) * 3 * tile_size, 3 * tile_size)))
         pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
                                             tile_size * (player_position[1] - 1) + info_panel_height,
                                             3 * tile_size, 3 * tile_size), 3)
 
-        for shop_event in pygame.event.get():
-            if shop_event.type == pygame.QUIT:
+        for fight_event in pygame.event.get():
+            if fight_event.type == pygame.QUIT:
                 pygame.quit()
-            if shop_event.type == pygame.KEYDOWN:
-                if shop_event.key == pygame.K_SPACE:
+            if fight_event.type == pygame.KEYDOWN:
+                if fight_event.key == pygame.K_SPACE:
                     if state == "attack":
-                        percent = int(100 * value / 304)
-                        print(f"attack: {percent}%")
+                        atk_percent = int(100 * value / 304) + 50
+                        print(f"attack: {atk_percent}%")
+                        p_atk = int(player_attack * atk_percent / 100)
                         state = "defence"
                         counter = 0
                         value = 1
                     elif state == "defence":
-                        percent = int(100 * value / 304)
-                        print(f"attack: {percent}%")
-                        state = "attack"
+                        def_percent = int(100 * value / 304) + 50
+                        print(f"defence: {def_percent}%")
+                        p_def = int(player_defense * def_percent / 100)
+                        state = "fight"
                         counter = 0
                         value = 1
-                """else:
-                        finish = True"""
+                if state == "fight":
+                    print(f"player ATK = {int(p_atk)}, DEF = {int(p_def)}")
+                    if monster_def < p_atk:
+                        damage = p_atk - monster_def
+                        print(f"monster damage = {damage}")
+                        monster_health -= damage
+                        print(f"monster health = {monster_health}")
+                        if monster_health <= 0:
+                            state = "win"
+                    if player_defense < monster_atk and state != "win":
+                        damage = monster_atk - player_defense
+                        print(f"player damage = {damage}")
+                        player_hp -= damage
+                        print(f"player health = {player_hp}")
+                        if player_hp <= 0:
+                            state = "defeated"
+                    if state not in ("win", "defeated"):
+                        state = "attack"
+
         pygame.display.update()
         clock.tick(60)
 

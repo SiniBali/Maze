@@ -16,8 +16,7 @@ shop_amount = 1
 maze_level = 1
 player_gold = 0
 player_hp = 5
-player_max_hp = 10
-additional_hp = 0
+player_max_hp = 0
 player_attack = 0
 player_defense = 0
 fill_items = True  # FOR TESTING
@@ -74,8 +73,8 @@ rag_suit_surf = pygame.image.load("pictures/rag_suit.png")
 linen_cloth_surf = pygame.image.load("pictures/linen_cloth.png")
 
 # item parameters: price, attack, defense, place (0: right hand, 1: left hand, 2: head), surf
-gears = (("Rusty Dagger", (0, 0, 0, 0), rusty_dagger_surf),
-         ("Oak Staff", (5, 2, 0, 0), oak_staff_surf),
+gears = (("Rusty Dagger", (0, 10, 0, 0), rusty_dagger_surf),
+         ("Oak Staff", (5, 1412, 0, 0), oak_staff_surf),
          ("Iron Mace", (15, 5, 0, 0), iron_mace_surf),
          ("Steel Sword", (40, 2, 0, 0), steel_sword_surf),
          ("Shadow Blade", (120, 2, 0, 0), shadow_blade_surf),
@@ -84,21 +83,21 @@ gears = (("Rusty Dagger", (0, 0, 0, 0), rusty_dagger_surf),
          ("Venom Dagger", (1760, 2, 0, 0), venom_dagger_surf),
          ("Rune Staff", (3100, 2, 0, 0), rune_staff_surf),
          ("Holy Hammer", (8500, 2, 0, 0), holy_hammer_surf),
-         ("Dragon Lance", (15000, 2, 0, 1), dragon_lance_surf),
-         ("Rusty plate", (0, 0, 0, 0), rusty_plate_surf),
-         ("Wooden Buckler", (3, 0, 2, 1), wooden_buckler_surf),
-         ("Iron Shield", (12, 0, 6, 1), iron_shield_surf),
-         ("Bull Shield", (60, 2, 0, 1), bull_shield_surf),
-         ("Light Barrier", (420, 2, 0, 1), light_barrier_surf),
-         ("Crystal Tower", (1100, 2, 0, 1), crystal_tower_surf),
-         ("Turtle Shield", (2900, 2, 0, 1), turtle_shield_surf),
-         ("Golden Barrier", (4100, 2, 0, 1), golden_barrier_surf),
-         ("Flame Aegis", (8300, 2, 0, 1), flame_aegis_surf),
-         ("Rune Engraved", (12000, 2, 0, 1), rune_engraved_surf),
-         ("Holy Aegis", (18000, 2, 0, 1), holy_aegis_surf),
-         ("Rag suit", (0, 0, 0, 2), rag_suit_surf),
-         ("Linen Cloth", (4, 2, 0, 2), linen_cloth_surf),
-         ("Linen Cloth", (4, 2, 0, 2), linen_cloth_surf))
+         ("Dragon Lance", (15000, 2, 0, 0), dragon_lance_surf),
+         ("Rusty plate", (0, 0, 6, 0), rusty_plate_surf),
+         ("Wooden Buckler", (3, 0, 10, 0), wooden_buckler_surf),
+         ("Iron Shield", (12, 0, 6, 0), iron_shield_surf),
+         ("Bull Shield", (60, 2, 0, 0), bull_shield_surf),
+         ("Light Barrier", (420, 2, 0, 0), light_barrier_surf),
+         ("Crystal Tower", (1100, 2, 0, 0), crystal_tower_surf),
+         ("Turtle Shield", (2900, 2, 0, 0), turtle_shield_surf),
+         ("Golden Barrier", (4100, 2, 0, 0), golden_barrier_surf),
+         ("Flame Aegis", (8300, 2, 0, 0), flame_aegis_surf),
+         ("Rune Engraved", (12000, 2, 0, 0), rune_engraved_surf),
+         ("Holy Aegis", (18000, 2, 0, 0), holy_aegis_surf),
+         ("Rag suit", (0, 0, 0, 10), rag_suit_surf),
+         ("Linen Cloth", (4, 0, 0, 18), linen_cloth_surf),
+         ("Linen Cloth", (4, 2, 0, 0), linen_cloth_surf))
 
 wears = [gears[0],
          gears[11],
