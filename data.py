@@ -73,8 +73,8 @@ rag_suit_surf = pygame.image.load("pictures/rag_suit.png")
 linen_cloth_surf = pygame.image.load("pictures/linen_cloth.png")
 
 # item parameters: price, attack, defense, place (0: right hand, 1: left hand, 2: head), surf
-gears = (("Rusty Dagger", (0, 10, 0, 0), rusty_dagger_surf),
-         ("Oak Staff", (5, 1412, 0, 0), oak_staff_surf),
+gears = (("Rusty Dagger", (0, 4, 0, 0), rusty_dagger_surf),
+         ("Oak Staff", (5, 6, 0, 0), oak_staff_surf),
          ("Iron Mace", (15, 5, 0, 0), iron_mace_surf),
          ("Steel Sword", (40, 2, 0, 0), steel_sword_surf),
          ("Shadow Blade", (120, 2, 0, 0), shadow_blade_surf),

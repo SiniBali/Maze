@@ -356,8 +356,8 @@ def monster_fight():
     global player_hp
     monster_health = 12
     print(f"monster health = {monster_health}")
-    monster_def = 12
-    monster_atk = 6
+    monster_def = 5
+    monster_atk = 2
     value = 1
     counter = 0
     state = "attack"
@@ -373,12 +373,16 @@ def monster_fight():
                 screen.blit(tile_surf, (tile_size * (player_position[0] + i),
                                         tile_size * (player_position[1] + j) + info_panel_height))
         if state == "attack":
+            attack_bar = value / 304
             printer("ATK power", (tile_size * player_position[0] - 24,
                                   tile_size * player_position[1] + 92), normal_font, "red")
             draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
                                                         tile_size * (player_position[1] - 1) + info_panel_height + 48,
-                                                        (value / 304) * 3 * tile_size, 48)))
+                                                        attack_bar * 3 * tile_size, 48)))
         elif state == "defence":
+            draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
+                                                        tile_size * (player_position[1] - 1) + info_panel_height + 48,
+                                                        attack_bar * 3 * tile_size, 48)))
             draw_rect_alpha(screen, (0, 255, 0, 100), ((tile_size * ((player_position[0] + 2) - (value / 304) * 3) + 1,
                                                         tile_size * (player_position[1] - 1) + info_panel_height,
                                                         (value / 304) * 3 * tile_size, 48)))
@@ -413,20 +417,10 @@ def monster_fight():
                         value = 1
                 if state == "fight":
                     print(f"player ATK = {int(p_atk)}, DEF = {int(p_def)}")
-                    if monster_def < p_atk:
-                        damage = p_atk - monster_def
-                        print(f"monster damage = {damage}")
-                        monster_health -= damage
-                        print(f"monster health = {monster_health}")
-                        if monster_health <= 0:
-                            state = "win"
-                    if player_defense < monster_atk and state != "win":
-                        damage = monster_atk - player_defense
-                        print(f"player damage = {damage}")
-                        player_hp -= damage
-                        print(f"player health = {player_hp}")
-                        if player_hp <= 0:
-                            state = "defeated"
+                    if choice(range(0,100)) < 50 + 5 * (monster_def - player_attack):
+                        print("block")
+                    else:
+                        print(f"damage: {p_atk}")
                     if state not in ("win", "defeated"):
                         state = "attack"
 
