@@ -54,15 +54,15 @@ def draw_map():
                     if not boss_defeated:
                         screen.blit(grid_surf, place)
                 elif maze[x][y] == "monster":
-                    screen.blit(monster_surf, place)
+                    screen.blit(monster_values[maze_level - 1][3], place)
                 elif maze[x][y] == "boss":
-                    screen.blit(boss_surf, place)
+                    screen.blit(boss_values[maze_level - 1][3], place)
                 elif maze[x][y] == "coin":
                     screen.blit(coin_surf, place)
                 elif maze[x][y] == "health":
                     screen.blit(health_surf, place)
-                elif maze[x][y] == "treasure":
-                    screen.blit(chest_surf, place)
+                elif maze[x][y] == "well":
+                    screen.blit(well_surf, place)
                 elif maze[x][y] == "shop":
                     screen.blit(shop_surf, place)
                 elif maze[x][y] == "rat":
@@ -71,6 +71,10 @@ def draw_map():
                     screen.blit(pearl_surf, place)
                 elif maze[x][y] == "log":
                     screen.blit(log_surf, place)
+                elif maze[x][y] == "note":
+                    screen.blit(note_surf, place)
+                elif maze[x][y] == "egg":
+                    screen.blit(egg_surf, place)
 
 
 def update_map():
@@ -78,13 +82,12 @@ def update_map():
     global player_hp, player_gold, boss_defeated, quest_item_quantity, quest_state
     x, y = player_position[0], player_position[1]
     if maze[x][y] == "monster":
-        found_animation(monster_surf, monster_sound)
+        found_animation(monster_values[maze_level - 1][3], monster_sound)
         maze[x][y] = "room"
-        monster_fight()
+        monster_fight(monster_values[maze_level - 1][0], monster_values[maze_level - 1][1],
+                      monster_values[maze_level - 1][2])
     elif maze[x][y] == "boss":
-        found_animation(boss_surf, boss_sound)
-        boss_defeated = True
-        grid_open_sound.play()
+        found_animation(boss_values[maze_level - 1][3], boss_sound)
     elif maze[x][y] == "coin":
         player_gold += maze_level
         found_animation(coin_surf, coin_sound)
@@ -94,9 +97,13 @@ def update_map():
         if player_hp < player_max_hp:
             player_hp += maze_level
             maze[x][y] = "room"
-    elif maze[x][y] == "treasure":
-        found_animation(chest_surf, chest_sound)
+    elif maze[x][y] == "well":
+        found_animation(well_surf, chest_sound)
         maze[x][y] = "room"
+        update_map()
+        draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
+                    wears[0][2], wears[1][2], wears[2][2], 1)
+        chest()
     elif maze[x][y] == "shop":
         found_animation(shop_surf, shop_sound)
     elif maze[x][y] == "rat":
@@ -111,6 +118,14 @@ def update_map():
         found_animation(log_surf, chop_sound)
         quest_item_quantity -= 1
         maze[x][y] = "room"
+    elif maze[x][y] == "note":
+        found_animation(note_surf, coin_sound)
+        quest_item_quantity -= 1
+        maze[x][y] = "room"
+    elif maze[x][y] == "egg":
+        found_animation(egg_surf, chop_sound)
+        quest_item_quantity -= 1
+        maze[x][y] = "room"
     if not quest_item_quantity and quest_state == "accepted":
         quest_state = "done"
 
@@ -118,16 +133,14 @@ def update_map():
 def draw_player(position, r_hand, l_hand, body, size):
     x, y = position[0], position[1]
     player = player_surf
-    if position[0] == 0 and maze[x][y] == "entrance":
+    if maze[player_position[0]][player_position[1]] == "entrance":
         x_dif, y_dif = -6, - 18
-    elif position[0] == dimension - 1:
+    elif maze[player_position[0]][player_position[1]] == "exit":
         x_dif, y_dif = 7, 7
         player = pygame.transform.chop(player_surf, (21, 21, 32, 32))
         r_hand = pygame.transform.chop(r_hand, (21, 21, 32, 32))
         l_hand = pygame.transform.chop(l_hand, (21, 21, 32, 32))
         body = pygame.transform.chop(body, (21, 21, 32, 32))
-    elif maze[x][y] == "with_boss":
-        x_dif, y_dif = -8, 0
     else:
         x_dif, y_dif = 0, 0
     if size != 1:
@@ -135,12 +148,12 @@ def draw_player(position, r_hand, l_hand, body, size):
         r_hand = pygame.transform.scale(r_hand, (32 * size, 32 * size))
         l_hand = pygame.transform.scale(l_hand, (32 * size, 32 * size))
         body = pygame.transform.scale(body, (32 * size, 32 * size))
-    screen.blit(player, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
-    screen.blit(body, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
-    screen.blit(r_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
-    screen.blit(l_hand, (x * tile_size + x_dif, y * tile_size + info_panel_height + y_dif))
+    screen.blit(player, (x + x_dif, y + y_dif))
+    screen.blit(body, (x + x_dif, y + y_dif))
+    screen.blit(r_hand, (x + x_dif, y + y_dif))
+    screen.blit(l_hand, (x + x_dif, y + y_dif))
     if darkness and size == 1:
-        screen.blit(mask_surf, (x * tile_size - 128, y * tile_size + info_panel_height - 128))
+        screen.blit(mask_surf, (x - 128, y - 128))
 
 
 def info_panel():
@@ -169,8 +182,10 @@ def found_animation(item, sound):
         big_surf = pygame.transform.scale(item, (scale_x, scale_y))
         big_rect = big_surf.get_rect(center=(x + tile_size / 2, y + tile_size / 2))
         big_surf.set_alpha(int(255 - 255 * (i / 9)))
-        draw_player((player_position[0], player_position[1]), wears[0][2], wears[1][2], wears[2][2], 1)
+        draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
+                    wears[0][2], wears[1][2], wears[2][2], 1)
         screen.blit(big_surf, big_rect)
+        info_panel()
         pygame.display.update()
         clock.tick(60)
 
@@ -268,9 +283,10 @@ def shopping():
                         l_hand_surf = shop_list[selected][2]
                     elif selected == 2:
                         body_surf = shop_list[selected][2]
-                    screen.blit(tile, (11 * tile_size, tile_size + info_panel_height))
-                    draw_player((11, 1), r_hand_surf, l_hand_surf, body_surf, 3)
-            draw_player((15, 1), wears[0][2], wears[1][2], wears[2][2], 3)
+                    screen.blit(tile, (11 * tile_size, 1 * tile_size + info_panel_height))
+                    draw_player((11 * tile_size, 1 * tile_size + info_panel_height),
+                                r_hand_surf, l_hand_surf, body_surf, 3)
+            draw_player((15 * 32, 1 * tile_size + info_panel_height), wears[0][2], wears[1][2], wears[2][2], 3)
             pygame.display.update()
     clock.tick(60)
 
@@ -352,86 +368,225 @@ def quest_item_placing(maze, number, type):
             counter += 1
 
 
-def monster_fight():
+def monster_fight(monster_attack, monster_defense, monster_health):
     global player_hp
-    monster_health = 12
-    print(f"monster health = {monster_health}")
-    monster_def = 12
-    monster_atk = 6
-    value = 1
-    counter = 0
+    if maze[player_position[0]][player_position[1]] == "boss":
+        opponent_surface = boss_values[maze_level - 1][3]
+    else:
+        opponent_surface = monster_values[maze_level - 1][3]
+    monster_max_health = monster_health
     state = "attack"
-
-    while state not in ("win", "defeated"):
-        if counter == 60:
-            counter = 0
-            value = 1
-        value = (value * 1.1)
-        counter += 1
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                screen.blit(tile_surf, (tile_size * (player_position[0] + i),
-                                        tile_size * (player_position[1] + j) + info_panel_height))
-        if state == "attack":
-            printer("ATK power", (tile_size * player_position[0] - 24,
-                                  tile_size * player_position[1] + 92), normal_font, "red")
-            draw_rect_alpha(screen, (255, 0, 0, 100), ((tile_size * (player_position[0] - 1),
-                                                        tile_size * (player_position[1] - 1) + info_panel_height + 48,
-                                                        (value / 304) * 3 * tile_size, 48)))
-        elif state == "defence":
-            draw_rect_alpha(screen, (0, 255, 0, 100), ((tile_size * ((player_position[0] + 2) - (value / 304) * 3) + 1,
-                                                        tile_size * (player_position[1] - 1) + info_panel_height,
-                                                        (value / 304) * 3 * tile_size, 48)))
-            printer("DEF power", ((tile_size * player_position[0] - 24,
-                                   tile_size * player_position[1] + 30)), normal_font, "green")
-        draw_player((player_position[0] - 1, player_position[1]),
+    while True:
+        fight_stage()
+        printer("Space", (tile_size * player_position[0] - 5, tile_size * player_position[1] + 92), normal_font,
+                "white")
+        draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
                     wears[0][2], wears[1][2], wears[2][2], 1)
-        screen.blit(monster_surf, ((tile_size * (player_position[0] + 1)),
-                                   tile_size * (player_position[1]) + info_panel_height))
-        pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
-                                            tile_size * (player_position[1] - 1) + info_panel_height,
-                                            3 * tile_size, 3 * tile_size), 3)
-
+        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
+                                       tile_size * (player_position[1]) + info_panel_height))
+        pygame.draw.rect(screen, "black", (tile_size * (player_position[0] - 1) + 4,
+                                           tile_size * (player_position[1] - 1) + 30 + info_panel_height, 28, 3))
+        pygame.draw.rect(screen, "red", (tile_size * (player_position[0] - 1) + 4,
+                                         tile_size * (player_position[1] - 1) + 30 + info_panel_height,
+                                         28 * (player_hp / player_max_hp), 3))
+        pygame.draw.rect(screen, "black", (tile_size * (player_position[0] - 1) + 64,
+                                           tile_size * (player_position[1] - 1) + 30 + info_panel_height, 28, 3))
+        pygame.draw.rect(screen, "red", (tile_size * (player_position[0] - 1) + 64,
+                                         tile_size * (player_position[1] - 1) + 30 + info_panel_height,
+                                         28 * (monster_health / monster_max_health), 3))
+        printer(str(player_hp), (tile_size * (player_position[0] - 1) + 6, tile_size * (player_position[1] - 1) + 33
+                                 + info_panel_height), normal_font, "white")
+        printer(str(monster_health), (tile_size * (player_position[0] - 1) + 66, tile_size * (player_position[1] - 1)
+                                      + 33 + info_panel_height), normal_font, "white")
         for fight_event in pygame.event.get():
             if fight_event.type == pygame.QUIT:
                 pygame.quit()
             if fight_event.type == pygame.KEYDOWN:
                 if fight_event.key == pygame.K_SPACE:
                     if state == "attack":
-                        atk_percent = int(100 * value / 304) + 50
-                        print(f"attack: {atk_percent}%")
-                        p_atk = int(player_attack * atk_percent / 100)
-                        state = "defence"
-                        counter = 0
-                        value = 1
-                    elif state == "defence":
-                        def_percent = int(100 * value / 304) + 50
-                        print(f"defence: {def_percent}%")
-                        p_def = int(player_defense * def_percent / 100)
-                        state = "fight"
-                        counter = 0
-                        value = 1
-                if state == "fight":
-                    print(f"player ATK = {int(p_atk)}, DEF = {int(p_def)}")
-                    if monster_def < p_atk:
-                        damage = p_atk - monster_def
-                        print(f"monster damage = {damage}")
-                        monster_health -= damage
-                        print(f"monster health = {monster_health}")
-                        if monster_health <= 0:
-                            state = "win"
-                    if player_defense < monster_atk and state != "win":
-                        damage = monster_atk - player_defense
-                        print(f"player damage = {damage}")
-                        player_hp -= damage
-                        print(f"player health = {player_hp}")
-                        if player_hp <= 0:
-                            state = "defeated"
-                    if state not in ("win", "defeated"):
-                        state = "attack"
-
+                        if choice(range(0, 100)) < 50 + 3 * (player_attack - monster_defense):
+                            damage = int(player_attack * attack("player", "hit"))
+                            printer(str(-damage), (tile_size * (player_position[0] - 1) + 66,
+                                                   tile_size * (player_position[1] - 1) + 33 + info_panel_height),
+                                    highlighted_font, "white")
+                            pygame.display.update()
+                            pygame.time.wait(1000)
+                            monster_health -= damage
+                            if monster_health <= 0:
+                                print("win")
+                                return "win"
+                            else:
+                                state = "defense"
+                        else:
+                            attack("player", "block")
+                            state = "defense"
+                    elif state == "defense":
+                        if choice(range(0, 100)) < 50 + 3 * (monster_attack - player_defense):
+                            damage = int(monster_attack * (1 - attack("monster", "hit")))
+                            printer(str(-damage), (tile_size * (player_position[0] - 1) + 6,
+                                                   tile_size * (player_position[1] - 1) + 33 + info_panel_height),
+                                    highlighted_font, "white")
+                            pygame.display.update()
+                            pygame.time.wait(1000)
+                            player_hp -= damage
+                            if player_hp <= 0:
+                                print("defeated")
+                                player_hp = player_max_hp
+                                return "defeated"
+                            else:
+                                state = "attack"
+                        else:
+                            attack("monster", "block")
+                            state = "attack"
+        info_panel()
         pygame.display.update()
         clock.tick(60)
+
+
+def fight_stage():
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            screen.blit(tile_surf, (tile_size * (player_position[0] + i),
+                                    tile_size * (player_position[1] + j) + info_panel_height))
+    pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
+                                        tile_size * (player_position[1] - 1) + info_panel_height,
+                                        3 * tile_size, 3 * tile_size), 3)
+
+
+def attack(who, action):
+    if maze[player_position[0]][player_position[1]] == "boss":
+        opponent_surface = boss_values[maze_level - 1][3]
+    else:
+        opponent_surface = monster_values[maze_level - 1][3]
+    if action == "hit":
+        surf, text = hit_surf, "strike"
+        wait = True
+    elif action == "block":
+        surf, text = block_surf, "block"
+        wait = False
+    if who == "player":
+        for i in range(40):
+            fight_stage()
+            draw_player(((player_position[0] - 1) * tile_size + i, player_position[1] * tile_size + info_panel_height),
+                        wears[0][2], wears[1][2], wears[2][2], 1)
+            screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
+                                           tile_size * (player_position[1]) + info_panel_height))
+            info_panel()
+            clock.tick(180)
+            pygame.display.update()
+        fight_stage()
+        draw_player(((player_position[0] - 1) * tile_size + 40, player_position[1] * tile_size + info_panel_height),
+                    wears[0][2], wears[1][2], wears[2][2], 1)
+        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
+                                       tile_size * (player_position[1]) + info_panel_height))
+        screen.blit(surf, ((tile_size * (player_position[0] + 1)),
+                           tile_size * (player_position[1]) - 32 + info_panel_height))
+        printer(text, (tile_size * player_position[0] - 4,
+                       tile_size * player_position[1] + 92), normal_font, "white")
+        info_panel()
+        clock.tick(60)
+        pygame.display.update()
+        pygame.time.wait(600)
+    elif who == "monster":
+        for i in range(40):
+            fight_stage()
+            draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
+                        wears[0][2], wears[1][2], wears[2][2], 1)
+            screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1) - i),
+                                           tile_size * (player_position[1]) + info_panel_height))
+            info_panel()
+            clock.tick(180)
+            pygame.display.update()
+        fight_stage()
+        draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
+                    wears[0][2], wears[1][2], wears[2][2], 1)
+        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1) - 40),
+                                       tile_size * (player_position[1]) + info_panel_height))
+        screen.blit(surf, (((player_position[0] - 1) * tile_size,
+                            player_position[1] * tile_size - 32 + info_panel_height)))
+        printer(text, (tile_size * player_position[0] - 4,
+                       tile_size * player_position[1] + 92), normal_font, "white")
+        info_panel()
+        clock.tick(60)
+        pygame.display.update()
+        pygame.time.wait(600)
+    value = 1
+    counter = 0
+    while wait:
+        if counter == 60:
+            counter = 0
+            value = 1
+        value = (value * 1.1)
+        counter += 1
+
+        if action == "hit":
+            if who == "player":
+                text, rgb = "ATK power", (255, 0, 0, 100)
+            else:
+                text, rgb = "DEF power ", (0, 255, 0, 100)
+            for i in range(-1, 2):
+                screen.blit(tile_surf, (tile_size * (player_position[0] + i),
+                                        tile_size * (player_position[1] + 1) + info_panel_height))
+            printer(text, (tile_size * player_position[0] - 24,
+                           tile_size * player_position[1] + 92), normal_font, "white")
+            draw_rect_alpha(screen, rgb, ((tile_size * (player_position[0] - 1),
+                                           tile_size * (player_position[1] - 1) + info_panel_height + 64,
+                                           (value / 304) * 3 * tile_size, 32)))
+            pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
+                                                tile_size * (player_position[1] - 1) + info_panel_height,
+                                                3 * tile_size, 3 * tile_size), 3)
+            info_panel()
+            clock.tick(60)
+            pygame.display.update()
+
+            for fight_event in pygame.event.get():
+                if fight_event.type == pygame.QUIT:
+                    pygame.quit()
+                if fight_event.type == pygame.KEYDOWN:
+                    if fight_event.key == pygame.K_SPACE:
+                        if action == "hit":
+                            return value / 304  # factor (between 0 - 1)
+
+
+def chest():
+    global darkness, player_hp, player_gold
+    chest_text = ("The map of this level",
+                  "Heal for full health",
+                  f"A purse with {int(2.1 ** maze_level) * 10} gold")
+    done = False
+    selected = 0
+    while not done:
+        info_panel()
+        for x in range(dimension):
+            for y in range(4):
+                screen.blit(wall_surf, (x * tile_size, (y + 1) * tile_size))
+        printer("I am a Wishing Well. Please tell me what you want:", (10, tile_size * 2), highlighted_font, "purple")
+        for count, text in enumerate(chest_text):
+            if count == selected:
+                font, col = highlighted_font, "green"
+            else:
+                font, col = normal_font, "white"
+            printer(text, (10, tile_size * (3 + count)), font, col)
+        pygame.draw.rect(screen, "brown", (0, tile_size, WIDTH, 4 * tile_size), 3)
+        for chest_event in pygame.event.get():
+            if chest_event.type == pygame.QUIT:
+                pygame.quit()
+            if chest_event.type == pygame.KEYDOWN:
+                if chest_event.key == pygame.K_DOWN:
+                    if selected < 2:
+                        selected += 1
+                if chest_event.key == pygame.K_UP:
+                    if selected > 0:
+                        selected -= 1
+                if chest_event.key == pygame.K_SPACE:
+                    if selected == 0:
+                        darkness = False
+                    elif selected == 1:
+                        player_hp = player_max_hp
+                    else:
+                        player_gold += int(2.1 ** maze_level) * 10
+                    done = True
+        pygame.display.update()
 
 
 quest = choice(quests)
@@ -455,7 +610,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_m:
+            if event.key == pygame.K_9:
                 darkness = not darkness
             if event.key == pygame.K_LEFT and maze[player_position[0]][player_position[1]] != "entrance" \
                     and maze[player_position[0] - 1][player_position[1]] not in ("wall", "entrance"):
@@ -468,6 +623,7 @@ while True:
                     new_level_sound.play()
                     maze_fade_out()
                     maze = maze_generator()
+                    darkness = True
                     maze_level += 1
                     maze_fade_in()
                     boss_defeated = False
@@ -493,10 +649,18 @@ while True:
                 steps_sound.play()
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "shop":
                 shopping()
+            elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "boss":
+                result = monster_fight(boss_values[maze_level - 1][0], boss_values[maze_level - 1][1],
+                                       boss_values[maze_level - 1][2])
+                if result == "win":
+                    boss_defeated = True
+                    maze[player_position[0]][player_position[1]] = "room"
+                    grid_open_sound.play()
             update_map()
-    draw_map()
 
-    draw_player(player_position, wears[0][2], wears[1][2], wears[2][2], 1)
+    draw_map()
+    draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
+                wears[0][2], wears[1][2], wears[2][2], 1)
     info_panel()
     update_attributes()
     pygame.display.update()

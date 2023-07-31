@@ -71,12 +71,11 @@ def maze_generator():
                 adjacent.append((new_room[0] + 2, new_room[1]))
     matrix[entrance_door_position[0]][entrance_door_position[1]] = "entrance"
     matrix[exit_door_position[0]][exit_door_position[1]] = "exit"
-    if fill_items:
-        item_placement(matrix, monster_amount, "monster")
-        item_placement(matrix, coin_amount, "coin")
-        item_placement(matrix, potion_amount, "health")
-        item_placement(matrix, treasure_amount, "treasure")
-        item_placement(matrix, shop_amount, "shop")
-        item_placement(matrix, boss_amount, "boss")
+    item_placement(matrix, monster_amount, "monster")
+    item_placement(matrix, coin_amount, "coin")
+    item_placement(matrix, potion_amount, "health")
+    item_placement(matrix, well_amount, "well")
+    item_placement(matrix, shop_amount, "shop")
+    item_placement(matrix, boss_amount, "boss")
 
     return matrix
