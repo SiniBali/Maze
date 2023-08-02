@@ -161,6 +161,7 @@ shop_sound = pygame.mixer.Sound("sounds/shop.wav")
 new_level_sound = pygame.mixer.Sound("sounds/new_level.wav")
 rat_sound = pygame.mixer.Sound("sounds/rat.wav")
 chop_sound = pygame.mixer.Sound("sounds/chop.wav")
+ouch_sound = pygame.mixer.Sound("sounds/ouch.wav")
 
 normal_font = pygame.font.Font(None, 23)
 highlighted_font = pygame.font.Font(None, 26)

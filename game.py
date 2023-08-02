@@ -83,9 +83,11 @@ def update_map():
     x, y = player_position[0], player_position[1]
     if maze[x][y] == "monster":
         found_animation(monster_values[maze_level - 1][3], monster_sound)
-        maze[x][y] = "room"
-        monster_fight(monster_values[maze_level - 1][0], monster_values[maze_level - 1][1],
-                      monster_values[maze_level - 1][2])
+        fight_result = monster_fight(monster_values[maze_level - 1][0], monster_values[maze_level - 1][1],
+                               monster_values[maze_level - 1][2])
+        if fight_result == "win":
+            maze[x][y] = "room"
+
     elif maze[x][y] == "boss":
         found_animation(boss_values[maze_level - 1][3], boss_sound)
     elif maze[x][y] == "coin":
@@ -103,7 +105,7 @@ def update_map():
         update_map()
         draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
                     wears[0][2], wears[1][2], wears[2][2], 1)
-        chest()
+        well()
     elif maze[x][y] == "shop":
         found_animation(shop_surf, shop_sound)
     elif maze[x][y] == "rat":
@@ -165,7 +167,7 @@ def info_panel():
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
         printer("Press SPACE to enter shop", (10, tile_size), highlighted_font, "purple")
     else:
-        printer(f"Gold: {player_gold}     Health: {player_hp} / {player_max_hp}     Maze level: {maze_level}     "
+        printer(f"Gold: {player_gold}     HP: {player_hp} / {player_max_hp}     Maze level: {maze_level}     "
                 f"ATK: {player_attack}     DEF: {player_defense}", (10, tile_size), highlighted_font, "white")
     if quest_state in ("accepted", "done"):
         printer(f"{quest_item_quantity}", (WIDTH - 34, tile_size), highlighted_font, "white")
@@ -369,7 +371,7 @@ def quest_item_placing(maze, number, type):
 
 
 def monster_fight(monster_attack, monster_defense, monster_health):
-    global player_hp
+    global player_hp, player_position, darkness
     if maze[player_position[0]][player_position[1]] == "boss":
         opponent_surface = boss_values[maze_level - 1][3]
     else:
@@ -431,7 +433,21 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                             player_hp -= damage
                             if player_hp <= 0:
                                 print("defeated")
-                                player_hp = player_max_hp
+                                printer("You failed", (tile_size * (player_position[0] - 1) + 5,
+                                                       tile_size * player_position[1] + info_panel_height + 24),
+                                        highlighted_font, "red")
+                                search = True
+                                while search:
+                                    random_x = randrange(1, dimension - 1)
+                                    random_y = randrange(1, dimension - 1)
+                                    if maze[random_x][random_y] == "room":
+                                        player_position = [random_x, random_y]
+                                        search = False
+                                        darkness = True
+                                ouch_sound.play()
+                                pygame.display.update()
+                                pygame.time.wait(3000)
+                                player_hp = int(player_max_hp / 2)
                                 return "defeated"
                             else:
                                 state = "attack"
@@ -548,11 +564,11 @@ def attack(who, action):
                             return value / 304  # factor (between 0 - 1)
 
 
-def chest():
+def well():
     global darkness, player_hp, player_gold
-    chest_text = ("The map of this level",
-                  "Heal for full health",
-                  f"A purse with {int(2.1 ** maze_level) * 10} gold")
+    chest_text = (f"A map, in cost of {player_hp - 1}HP. If you lost a fight, the map will disappear.",
+                  f"Heal for full HP (+{player_max_hp - player_hp}HP).",
+                  f"A purse with {int(2.2 ** maze_level) * 15} gold.")
     done = False
     selected = 0
     while not done:
@@ -581,6 +597,7 @@ def chest():
                 if chest_event.key == pygame.K_SPACE:
                     if selected == 0:
                         darkness = False
+                        player_hp = 1
                     elif selected == 1:
                         player_hp = player_max_hp
                     else:
