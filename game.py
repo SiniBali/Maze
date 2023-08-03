@@ -377,17 +377,14 @@ def monster_fight(monster_attack, monster_defense, monster_health):
     else:
         opponent_surface = monster_values[maze_level - 1][3]
     monster_max_health = monster_health
+    opponent_surface = pygame.transform.scale(opponent_surface, (64, 64))
     state = "attack"
     while True:
         fight_stage()
-        printer("Space", (tile_size * player_position[0] - 5, tile_size * player_position[1] + 92), normal_font,
-                "white")
-        draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
-                    wears[0][2], wears[1][2], wears[2][2], 1)
-        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
-                                       tile_size * (player_position[1]) + info_panel_height))
-        pygame.draw.rect(screen, "black", (tile_size * (player_position[0] - 1) + 4,
-                                           tile_size * (player_position[1] - 1) + 30 + info_panel_height, 28, 3))
+        printer("Space", (WIDTH/2 - 20, HEIGHT/2 - 20), normal_font, "white")
+        draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+        screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
+        pygame.draw.rect(screen, "black", (WIDTH/2 - 90, HEIGHT/2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (tile_size * (player_position[0] - 1) + 4,
                                          tile_size * (player_position[1] - 1) + 30 + info_panel_height,
                                          28 * (player_hp / player_max_hp), 3))
@@ -460,13 +457,10 @@ def monster_fight(monster_attack, monster_defense, monster_health):
 
 
 def fight_stage():
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            screen.blit(tile_surf, (tile_size * (player_position[0] + i),
-                                    tile_size * (player_position[1] + j) + info_panel_height))
-    pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
-                                        tile_size * (player_position[1] - 1) + info_panel_height,
-                                        3 * tile_size, 3 * tile_size), 3)
+    pygame.draw.rect(screen, "black ", (0, info_panel_height, WIDTH, HEIGHT))
+    surf = pygame.transform.scale(fight_stage_surf, (320, 128))
+    rect = surf.get_rect(center=(WIDTH/2, HEIGHT/2))
+    screen.blit(surf, rect)
 
 
 def attack(who, action):
@@ -474,52 +468,36 @@ def attack(who, action):
         opponent_surface = boss_values[maze_level - 1][3]
     else:
         opponent_surface = monster_values[maze_level - 1][3]
+    opponent_surface = pygame.transform.scale(opponent_surface, (64, 64))
     if action == "hit":
-        surf, text = hit_surf, "strike"
+        surf, text = pygame.transform.scale(hit_surf, (64, 64)), "strike"
         wait = True
     elif action == "block":
-        surf, text = block_surf, "block"
+        surf, text = pygame.transform.scale(block_surf, (64, 64)), "block"
         wait = False
     if who == "player":
         for i in range(40):
             fight_stage()
-            draw_player(((player_position[0] - 1) * tile_size + i, player_position[1] * tile_size + info_panel_height),
-                        wears[0][2], wears[1][2], wears[2][2], 1)
-            screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
-                                           tile_size * (player_position[1]) + info_panel_height))
+            draw_player((WIDTH/2 + i * 2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+            screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
             pygame.display.update()
-        fight_stage()
-        draw_player(((player_position[0] - 1) * tile_size + 40, player_position[1] * tile_size + info_panel_height),
-                    wears[0][2], wears[1][2], wears[2][2], 1)
-        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1)),
-                                       tile_size * (player_position[1]) + info_panel_height))
-        screen.blit(surf, ((tile_size * (player_position[0] + 1)),
-                           tile_size * (player_position[1]) - 32 + info_panel_height))
+        screen.blit(surf, (WIDTH / 2 + 32, HEIGHT / 2 - 64))
         printer(text, (tile_size * player_position[0] - 4,
                        tile_size * player_position[1] + 92), normal_font, "white")
         info_panel()
-        clock.tick(60)
         pygame.display.update()
         pygame.time.wait(600)
     elif who == "monster":
         for i in range(40):
             fight_stage()
-            draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
-                        wears[0][2], wears[1][2], wears[2][2], 1)
-            screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1) - i),
-                                           tile_size * (player_position[1]) + info_panel_height))
+            draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+            screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
             pygame.display.update()
-        fight_stage()
-        draw_player(((player_position[0] - 1) * tile_size, player_position[1] * tile_size + info_panel_height),
-                    wears[0][2], wears[1][2], wears[2][2], 1)
-        screen.blit(opponent_surface, ((tile_size * (player_position[0] + 1) - 40),
-                                       tile_size * (player_position[1]) + info_panel_height))
-        screen.blit(surf, (((player_position[0] - 1) * tile_size,
-                            player_position[1] * tile_size - 32 + info_panel_height)))
+        screen.blit(surf, (WIDTH / 2 - 96, HEIGHT / 2 - 64))
         printer(text, (tile_size * player_position[0] - 4,
                        tile_size * player_position[1] + 92), normal_font, "white")
         info_panel()

@@ -44,6 +44,7 @@ note_surf = pygame.image.load("pictures/note.png")
 egg_surf = pygame.image.load("pictures/egg.png")
 hit_surf = pygame.image.load("pictures/hit.png")
 block_surf = pygame.image.load("pictures/block.png")
+fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
 
 monster1_surf = pygame.image.load("pictures/monster1.png")
 monster2_surf = pygame.image.load("pictures/monster2.png")
