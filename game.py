@@ -381,7 +381,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
     state = "attack"
     while True:
         fight_stage()
-        printer("SPACE", (WIDTH/2 - 25, HEIGHT/2 - 35), highlighted_font, "light blue")
+        printer("SPACE", (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
         draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
         screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
         pygame.draw.rect(screen, "black", (WIDTH/2 - 90, HEIGHT/2 - 8, 56, 5))
@@ -398,9 +398,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                     if state == "attack":
                         if choice(range(0, 100)) < 50 + 3 * (player_attack - monster_defense):
                             damage = int(player_attack * attack("player", "hit"))
-                            printer(str(-damage), (tile_size * (player_position[0] - 1) + 66,
-                                                   tile_size * (player_position[1] - 1) + 33 + info_panel_height),
-                                    highlighted_font, "white")
+                            printer(str(-damage), (WIDTH/2 + 45, HEIGHT/2 - 70), highlighted_font, "red")
                             pygame.display.update()
                             monster_ah_sound.play()
                             pygame.time.wait(1000)
@@ -416,18 +414,15 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                     elif state == "defense":
                         if choice(range(0, 100)) < 50 + 3 * (monster_attack - player_defense):
                             damage = int(monster_attack * (1 - attack("monster", "hit")))
-                            printer(str(-damage), (tile_size * (player_position[0] - 1) + 6,
-                                                   tile_size * (player_position[1] - 1) + 33 + info_panel_height),
-                                    highlighted_font, "white")
+                            printer(str(-damage), (WIDTH/2 - 78, HEIGHT/2 - 70), highlighted_font, "red")
                             pygame.display.update()
                             player_ah_sound.play()
                             pygame.time.wait(1000)
                             player_hp -= damage
                             if player_hp <= 0:
                                 print("defeated")
-                                printer("You failed", (tile_size * (player_position[0] - 1) + 5,
-                                                       tile_size * player_position[1] + info_panel_height + 24),
-                                        highlighted_font, "red")
+                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24))
+                                printer("You've been knocked out", (WIDTH/2 - 90, HEIGHT/2 + 90), highlighted_font, "red")
                                 search = True
                                 while search:
                                     random_x = randrange(1, dimension - 1)
@@ -438,7 +433,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                                         darkness = True
                                 ouch_sound.play()
                                 pygame.display.update()
-                                pygame.time.wait(3000)
+                                pygame.time.wait(4000)
                                 player_hp = int(player_max_hp / 2)
                                 return "defeated"
                             else:
@@ -465,10 +460,11 @@ def attack(who, action):
         opponent_surface = monster_values[maze_level - 1][3]
     opponent_surface = pygame.transform.scale(opponent_surface, (64, 64))
     if action == "hit":
-        surf, text = pygame.transform.scale(hit_surf, (64, 64)), "strike"
+        surf, text = pygame.transform.scale(hit_surf, (64, 64)), "STRIKE"
+        hit_sound.play()
         wait = True
     elif action == "block":
-        surf, text = pygame.transform.scale(block_surf, (64, 64)), "block"
+        surf, text = pygame.transform.scale(block_surf, (64, 64)), "BLOCK"
         wait = False
     if who == "player":
         for i in range(40):
@@ -479,8 +475,7 @@ def attack(who, action):
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 + 32, HEIGHT / 2 - 64))
-        printer(text, (tile_size * player_position[0] - 4,
-                       tile_size * player_position[1] + 92), normal_font, "white")
+        printer(text, (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
         info_panel()
         pygame.display.update()
         if action == "block":
@@ -495,8 +490,7 @@ def attack(who, action):
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 - 96, HEIGHT / 2 - 64))
-        printer(text, (tile_size * player_position[0] - 4,
-                       tile_size * player_position[1] + 92), normal_font, "white")
+        printer(text, (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
         info_panel()
         clock.tick(60)
         pygame.display.update()
@@ -514,21 +508,14 @@ def attack(who, action):
 
         if action == "hit":
             if who == "player":
-                text, rgb = "ATK power", (255, 0, 0, 100)
+                text, rgb = "ATK power", (192, 0, 0)
             else:
-                text, rgb = "DEF power ", (0, 255, 0, 100)
-            for i in range(-1, 2):
-                screen.blit(tile_surf, (tile_size * (player_position[0] + i),
-                                        tile_size * (player_position[1] + 1) + info_panel_height))
-            printer(text, (tile_size * player_position[0] - 24,
-                           tile_size * player_position[1] + 92), normal_font, "white")
-            draw_rect_alpha(screen, rgb, ((tile_size * (player_position[0] - 1),
-                                           tile_size * (player_position[1] - 1) + info_panel_height + 64,
-                                           (value / 304) * 3 * tile_size, 32)))
-            pygame.draw.rect(screen, "black ", (tile_size * (player_position[0] - 1),
-                                                tile_size * (player_position[1] - 1) + info_panel_height,
-                                                3 * tile_size, 3 * tile_size), 3)
-            info_panel()
+                text, rgb = "DEF power ", (0, 192, 0)
+            pygame.draw.rect(screen, "black", (WIDTH/2 - 96, HEIGHT/2 + 64, 192, 24))
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 64, (value / 304) * 96, 24))
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 96, HEIGHT / 2 + 64, (value / 304) * 96, 24))
+            printer(text, (WIDTH/2 - 45, HEIGHT/2 + 90), highlighted_font, "white")
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24), 2)
             clock.tick(60)
             pygame.display.update()
 

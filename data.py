@@ -166,8 +166,9 @@ ouch_sound = pygame.mixer.Sound("sounds/ouch.wav")
 monster_ah_sound = pygame.mixer.Sound("sounds/monster_ah.wav")
 player_ah_sound = pygame.mixer.Sound("sounds/player_ah.wav")
 block_sound = pygame.mixer.Sound("sounds/block.wav")
+hit_sound = pygame.mixer.Sound("sounds/hit.wav")
 
-normal_font = pygame.font.Font(None, 23)
+normal_font = pygame.font.Font(None, 22)
 highlighted_font = pygame.font.Font(None, 26)
 menu_font = pygame.font.Font(None, 40)
 
