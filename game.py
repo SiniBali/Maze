@@ -381,22 +381,15 @@ def monster_fight(monster_attack, monster_defense, monster_health):
     state = "attack"
     while True:
         fight_stage()
-        printer("Space", (WIDTH/2 - 20, HEIGHT/2 - 20), normal_font, "white")
+        printer("SPACE", (WIDTH/2 - 25, HEIGHT/2 - 35), highlighted_font, "light blue")
         draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
         screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
         pygame.draw.rect(screen, "black", (WIDTH/2 - 90, HEIGHT/2 - 8, 56, 5))
-        pygame.draw.rect(screen, "red", (tile_size * (player_position[0] - 1) + 4,
-                                         tile_size * (player_position[1] - 1) + 30 + info_panel_height,
-                                         28 * (player_hp / player_max_hp), 3))
-        pygame.draw.rect(screen, "black", (tile_size * (player_position[0] - 1) + 64,
-                                           tile_size * (player_position[1] - 1) + 30 + info_panel_height, 28, 3))
-        pygame.draw.rect(screen, "red", (tile_size * (player_position[0] - 1) + 64,
-                                         tile_size * (player_position[1] - 1) + 30 + info_panel_height,
-                                         28 * (monster_health / monster_max_health), 3))
-        printer(str(player_hp), (tile_size * (player_position[0] - 1) + 6, tile_size * (player_position[1] - 1) + 33
-                                 + info_panel_height), normal_font, "white")
-        printer(str(monster_health), (tile_size * (player_position[0] - 1) + 66, tile_size * (player_position[1] - 1)
-                                      + 33 + info_panel_height), normal_font, "white")
+        pygame.draw.rect(screen, "red", (WIDTH/2 - 90, HEIGHT/2 - 8, 56 * (player_hp / player_max_hp), 5))
+        pygame.draw.rect(screen, "black", (WIDTH/2 + 38, HEIGHT/2 - 8, 56, 5))
+        pygame.draw.rect(screen, "red", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56 * (monster_health / monster_max_health), 5))
+        printer(str(player_hp), (WIDTH/2 - 90, HEIGHT/2 - 8), normal_font, "white")
+        printer(str(monster_health), (WIDTH/2 + 38, HEIGHT/2 - 8), normal_font, "white")
         for fight_event in pygame.event.get():
             if fight_event.type == pygame.QUIT:
                 pygame.quit()
@@ -409,6 +402,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                                                    tile_size * (player_position[1] - 1) + 33 + info_panel_height),
                                     highlighted_font, "white")
                             pygame.display.update()
+                            monster_ah_sound.play()
                             pygame.time.wait(1000)
                             monster_health -= damage
                             if monster_health <= 0:
@@ -426,6 +420,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                                                    tile_size * (player_position[1] - 1) + 33 + info_panel_height),
                                     highlighted_font, "white")
                             pygame.display.update()
+                            player_ah_sound.play()
                             pygame.time.wait(1000)
                             player_hp -= damage
                             if player_hp <= 0:
@@ -488,6 +483,8 @@ def attack(who, action):
                        tile_size * player_position[1] + 92), normal_font, "white")
         info_panel()
         pygame.display.update()
+        if action == "block":
+            block_sound.play()
         pygame.time.wait(600)
     elif who == "monster":
         for i in range(40):
@@ -503,6 +500,8 @@ def attack(who, action):
         info_panel()
         clock.tick(60)
         pygame.display.update()
+        if action == "block":
+            block_sound.play()
         pygame.time.wait(600)
     value = 1
     counter = 0
