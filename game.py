@@ -84,7 +84,7 @@ def update_map():
     if maze[x][y] == "monster":
         found_animation(monster_values[maze_level - 1][3], monster_sound)
         fight_result = monster_fight(monster_values[maze_level - 1][0], monster_values[maze_level - 1][1],
-                               monster_values[maze_level - 1][2])
+                                     monster_values[maze_level - 1][2])
         if fight_result == "win":
             maze[x][y] = "room"
 
@@ -381,15 +381,15 @@ def monster_fight(monster_attack, monster_defense, monster_health):
     state = "attack"
     while True:
         fight_stage()
-        printer("SPACE", (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
-        draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+        printer("SPACE", (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
+        draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
         screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
-        pygame.draw.rect(screen, "black", (WIDTH/2 - 90, HEIGHT/2 - 8, 56, 5))
-        pygame.draw.rect(screen, "red", (WIDTH/2 - 90, HEIGHT/2 - 8, 56 * (player_hp / player_max_hp), 5))
-        pygame.draw.rect(screen, "black", (WIDTH/2 + 38, HEIGHT/2 - 8, 56, 5))
+        pygame.draw.rect(screen, "black", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56, 5))
+        pygame.draw.rect(screen, "red", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56 * (player_hp / player_max_hp), 5))
+        pygame.draw.rect(screen, "black", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56 * (monster_health / monster_max_health), 5))
-        printer(str(player_hp), (WIDTH/2 - 90, HEIGHT/2 - 8), normal_font, "white")
-        printer(str(monster_health), (WIDTH/2 + 38, HEIGHT/2 - 8), normal_font, "white")
+        printer(str(player_hp), (WIDTH / 2 - 90, HEIGHT / 2 - 8), normal_font, "white")
+        printer(str(monster_health), (WIDTH / 2 + 38, HEIGHT / 2 - 8), normal_font, "white")
         for fight_event in pygame.event.get():
             if fight_event.type == pygame.QUIT:
                 pygame.quit()
@@ -398,13 +398,17 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                     if state == "attack":
                         if choice(range(0, 100)) < 50 + 3 * (player_attack - monster_defense):
                             damage = int(player_attack * attack("player", "hit"))
-                            printer(str(-damage), (WIDTH/2 + 45, HEIGHT/2 - 70), highlighted_font, "red")
+                            printer(str(-damage), (WIDTH / 2 + 45, HEIGHT / 2 - 70), highlighted_font, "red")
                             pygame.display.update()
                             monster_ah_sound.play()
                             pygame.time.wait(1000)
                             monster_health -= damage
                             if monster_health <= 0:
-                                print("win")
+                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 98, HEIGHT / 2 + 64, 194, 24))
+                                printer("You win!", (WIDTH / 2 - 40, HEIGHT / 2 + 90), highlighted_font, "white")
+                                win_sound.play()
+                                pygame.display.update()
+                                pygame.time.wait(1500)
                                 return "win"
                             else:
                                 state = "defense"
@@ -414,7 +418,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                     elif state == "defense":
                         if choice(range(0, 100)) < 50 + 3 * (monster_attack - player_defense):
                             damage = int(monster_attack * (1 - attack("monster", "hit")))
-                            printer(str(-damage), (WIDTH/2 - 78, HEIGHT/2 - 70), highlighted_font, "red")
+                            printer(str(-damage), (WIDTH / 2 - 78, HEIGHT / 2 - 70), highlighted_font, "red")
                             pygame.display.update()
                             player_ah_sound.play()
                             pygame.time.wait(1000)
@@ -422,7 +426,8 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                             if player_hp <= 0:
                                 print("defeated")
                                 pygame.draw.rect(screen, "black", (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24))
-                                printer("You've been knocked out", (WIDTH/2 - 90, HEIGHT/2 + 90), highlighted_font, "red")
+                                printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), highlighted_font,
+                                        "red")
                                 search = True
                                 while search:
                                     random_x = randrange(1, dimension - 1)
@@ -431,7 +436,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
                                         player_position = [random_x, random_y]
                                         search = False
                                         darkness = True
-                                ouch_sound.play()
+                                lose_sound.play()
                                 pygame.display.update()
                                 pygame.time.wait(4000)
                                 player_hp = int(player_max_hp / 2)
@@ -449,7 +454,7 @@ def monster_fight(monster_attack, monster_defense, monster_health):
 def fight_stage():
     pygame.draw.rect(screen, "black ", (0, info_panel_height, WIDTH, HEIGHT))
     surf = pygame.transform.scale(fight_stage_surf, (320, 128))
-    rect = surf.get_rect(center=(WIDTH/2, HEIGHT/2))
+    rect = surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
     screen.blit(surf, rect)
 
 
@@ -469,13 +474,13 @@ def attack(who, action):
     if who == "player":
         for i in range(40):
             fight_stage()
-            draw_player((WIDTH/2 + i * 2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+            draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
             screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 + 32, HEIGHT / 2 - 64))
-        printer(text, (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
         info_panel()
         pygame.display.update()
         if action == "block":
@@ -484,13 +489,13 @@ def attack(who, action):
     elif who == "monster":
         for i in range(40):
             fight_stage()
-            draw_player((WIDTH/2 - 96, HEIGHT/2), wears[0][2], wears[1][2], wears[2][2], 2)
+            draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
             screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 - 96, HEIGHT / 2 - 64))
-        printer(text, (WIDTH/2 - 25, HEIGHT/2 + 90), highlighted_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
         info_panel()
         clock.tick(60)
         pygame.display.update()
@@ -511,10 +516,10 @@ def attack(who, action):
                 text, rgb = "ATK power", (192, 0, 0)
             else:
                 text, rgb = "DEF power ", (0, 192, 0)
-            pygame.draw.rect(screen, "black", (WIDTH/2 - 96, HEIGHT/2 + 64, 192, 24))
+            pygame.draw.rect(screen, "black", (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 64, (value / 304) * 96, 24))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 96, HEIGHT / 2 + 64, (value / 304) * 96, 24))
-            printer(text, (WIDTH/2 - 45, HEIGHT/2 + 90), highlighted_font, "white")
+            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 90), highlighted_font, "white")
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24), 2)
             clock.tick(60)
             pygame.display.update()
@@ -596,7 +601,7 @@ while True:
             if event.key == pygame.K_LEFT and maze[player_position[0]][player_position[1]] != "entrance" \
                     and maze[player_position[0] - 1][player_position[1]] not in ("wall", "entrance"):
                 player_position[0] -= 1
-                steps_sound.play()
+                choice((step0_sound, step1_sound, step2_sound)).play()
             elif event.key == pygame.K_RIGHT:
                 if maze[player_position[0]][player_position[1]] == "entrance":
                     grid_slam_sound.play()
@@ -618,16 +623,16 @@ while True:
                             break
                 elif maze[player_position[0] + 1][player_position[1]] not in ("wall", "exit"):
                     player_position[0] += 1
-                    steps_sound.play()
+                    choice((step0_sound, step1_sound, step2_sound)).play()
                 elif maze[player_position[0] + 1][player_position[1]] == "exit" and boss_defeated:
                     player_position[0] += 1
-                    steps_sound.play()
+                    choice((step0_sound, step1_sound, step2_sound)).play()
             elif event.key == pygame.K_UP and maze[player_position[0]][player_position[1] - 1] != "wall":
                 player_position[1] -= 1
-                steps_sound.play()
+                choice((step0_sound, step1_sound, step2_sound)).play()
             elif event.key == pygame.K_DOWN and maze[player_position[0]][player_position[1] + 1] != "wall":
                 player_position[1] += 1
-                steps_sound.play()
+                choice((step0_sound, step1_sound, step2_sound)).play()
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "shop":
                 shopping()
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "boss":
