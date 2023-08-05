@@ -14,15 +14,15 @@ potion_amount = 4
 well_amount = 1
 shop_amount = 1
 maze_level = 1
-player_gold = 0
-player_hp = 10
+player_gold = 100000000
+player_atk = 0
+player_dmg = 0
+player_def = 0
 player_max_hp = 0
-player_attack = 0
-player_defense = 0
+outside = True
 darkness = True
 boss_defeated = False
 quest_state = "not in progress"
-outside = True
 
 wall_surf = pygame.image.load("pictures/wall.png")
 tile_surf = pygame.image.load("pictures/tile.png")
@@ -104,44 +104,48 @@ holy_armor_surf = pygame.image.load("pictures/holy_armor.png")
 crystal_plate_surf = pygame.image.load("pictures/crystal_plate.png")
 rune_armor_surf = pygame.image.load("pictures/rune_armor.png")
 
-# item parameters: price, attack, defense, place (0: right hand, 1: left hand, 2: head), surf
-gears = (("Rusty Dagger", (0, 10, 0, 0), rusty_dagger_surf),
-         ("Oak Staff", (5, 14, 0, 0), oak_staff_surf),
-         ("Iron Mace", (15, 18, 0, 0), iron_mace_surf),
-         ("Steel Sword", (40, 2, 0, 0), steel_sword_surf),
-         ("Shadow Blade", (120, 2, 0, 0), shadow_blade_surf),
-         ("Flame Axe", (300, 2, 0, 0), flame_axe_surf),
-         ("Venom Dagger", (680, 2, 0, 0), venom_dagger_surf),
-         ("Lightning Spear", (1760, 2, 0, 0), lightning_spear_surf),
-         ("Rune Staff", (3100, 2, 0, 0), rune_staff_surf),
-         ("Holy Hammer", (8500, 2, 0, 0), holy_hammer_surf),
-         ("Dragon Lance", (15000, 2, 0, 0), dragon_lance_surf),
-         ("Rusty plate", (0, 0, 6, 0), rusty_plate_surf),
-         ("Wooden Buckler", (3, 0, 10, 0), wooden_buckler_surf),
-         ("Iron Shield", (12, 0, 14, 0), iron_shield_surf),
-         ("Steel Shield", (60, 2, 0, 0), steel_shield_surf),
-         ("Light Barrier", (420, 2, 0, 0), light_barrier_surf),
-         ("Flame Aegis", (1100, 2, 0, 0), flame_aegis_surf),
-         ("Turtle Shield", (2900, 2, 0, 0), turtle_shield_surf),
-         ("Golden Barrier", (4100, 2, 0, 0), golden_barrier_surf),
-         ("Rune Engraved", (8300, 2, 0, 0), rune_engraved_surf),
-         ("Holy Aegis", (12000, 2, 0, 0), holy_aegis_surf),
-         ("Crystal Tower", (18000, 2, 0, 0), crystal_tower_surf),
-         ("Rag suit", (0, 0, 0, 10), rag_suit_surf),
-         ("Linen Cloth", (4, 0, 0, 18), linen_cloth_surf),
-         ("Chain Shirt", (4, 0, 0, 25), chain_shirt_surf),
-         ("Steel Protector", (4, 0, 0, 18), steel_protector_surf),
-         ("Shadow Cloak", (4, 0, 0, 18), shadow_cloak_surf),
-         ("Flame Safeguard", (4, 0, 0, 18), flame_safeguard_surf),
-         ("Venom Chainmail", (4, 0, 0, 18), venom_chainmail_surf),
-         ("Golden Mail", (4, 0, 0, 18), golden_mail_surf),
-         ("Rune Armor", (4, 0, 0, 18), rune_armor_surf),
-         ("Holy Armor", (4, 0, 0, 18), holy_armor_surf),
-         ("Crystal Plate", (4, 0, 0, 18), crystal_plate_surf))
+# item parameters: price, ATK, DMG, DEF, HP, surf
+gears = (("Rusty Dagger", (0, 12, 15, 0, 0), rusty_dagger_surf),
+         ("Oak Staff", (5, 18, 18, 0, 0), oak_staff_surf),
+         ("Iron Mace", (15, 30, 24, 0, 0), iron_mace_surf),
+         ("Steel Sword", (40, 45, 36, 0, 0), steel_sword_surf),
+         ("Shadow Blade", (120, 69, 60, 0, 0), shadow_blade_surf),
+         ("Flame Axe", (300, 90, 90, 0, 0), flame_axe_surf),
+         ("Venom Dagger", (680, 120, 135, 0, 0), venom_dagger_surf),
+         ("Lightning Spear", (1760, 195, 135, 0, 0), lightning_spear_surf),
+         ("Rune Staff", (3100, 225, 270, 0, 0), rune_staff_surf),
+         ("Holy Hammer", (8500, 300, 360, 0, 0), holy_hammer_surf),
+         ("Dragon Lance", (15000, 450, 480, 0, 0), dragon_lance_surf),
+
+         ("Rusty plate", (0, 0, 0, 15, 0), rusty_plate_surf),
+         ("Wooden Buckler", (3, 0, 0, 21, 0), wooden_buckler_surf),
+         ("Iron Shield", (12, 0, 0, 36, 0), iron_shield_surf),
+         ("Steel Shield", (60, 0, 0, 54, 0), steel_shield_surf),
+         ("Light Barrier", (420, 0, 0, 75, 0), light_barrier_surf),
+         ("Flame Aegis", (1100, 0, 0, 96, 0), flame_aegis_surf),
+         ("Turtle Shield", (2900, 0, 0, 126, 0), turtle_shield_surf),
+         ("Golden Barrier", (4100, 0, 0, 174, 0), golden_barrier_surf),
+         ("Rune Engraved", (8300, 0, 0, 240, 0), rune_engraved_surf),
+         ("Holy Aegis", (12000, 0, 0, 330, 0), holy_aegis_surf),
+         ("Crystal Tower", (18000, 0, 0, 495, 0), crystal_tower_surf),
+
+         ("Rag suit", (0, 0, 0, 0, 90), rag_suit_surf),
+         ("Linen Cloth", (4, 0, 0, 0, 150), linen_cloth_surf),
+         ("Chain Shirt", (4, 0, 0, 0, 240), chain_shirt_surf),
+         ("Steel Protector", (4, 0, 0, 0, 360), steel_protector_surf),
+         ("Shadow Cloak", (4, 0, 0, 0, 540), shadow_cloak_surf),
+         ("Flame Safeguard", (4, 0, 0, 0, 780), flame_safeguard_surf),
+         ("Venom Chainmail", (4, 0, 0, 0, 1170), venom_chainmail_surf),
+         ("Golden Mail", (4, 0, 0, 0, 1560), golden_mail_surf),
+         ("Rune Armor", (4, 0, 0, 0, 2070), rune_armor_surf),
+         ("Holy Armor", (4, 0, 0, 0, 2610), holy_armor_surf),
+         ("Crystal Plate", (4, 0, 0, 0, 3300), crystal_plate_surf))
 
 wears = [gears[0],
          gears[11],
          gears[22]]
+
+player_hp = wears[2][1][4]
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -154,7 +158,6 @@ grid_open_sound = pygame.mixer.Sound("sounds/grid_open.wav")
 grid_slam_sound = pygame.mixer.Sound("sounds/grid_slam.wav")
 step0_sound = pygame.mixer.Sound("sounds/step0.wav")
 step1_sound = pygame.mixer.Sound("sounds/step1.wav")
-step2_sound = pygame.mixer.Sound("sounds/step2.wav")
 coin_sound = pygame.mixer.Sound("sounds/coin.wav")
 chest_sound = pygame.mixer.Sound("sounds/chest.wav")
 health_sound = pygame.mixer.Sound("sounds/health.wav")
@@ -176,24 +179,8 @@ normal_font = pygame.font.Font(None, 22)
 highlighted_font = pygame.font.Font(None, 26)
 menu_font = pygame.font.Font(None, 40)
 
-monster_values = ((6, 8, 10, monster1_surf),  # atk, def, hp, surf
-                  (9, 10, 20, monster2_surf),
-                  [6, 6, 2, monster3_surf],
-                  [6, 6, 2, monster4_surf],
-                  [6, 6, 2, monster5_surf],
-                  [6, 6, 2, monster6_surf],
-                  [6, 6, 2, monster7_surf],
-                  [6, 6, 2, monster8_surf],
-                  [6, 6, 2, monster9_surf],
-                  [6, 6, 2, monster10_surf])
+monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
+                 monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)
 
-boss_values = ((14, 10, 25, boss1_surf),  # atk, def, hp, surf
-               (18, 14, 35, boss2_surf),
-               (14, 10, 25, boss3_surf),
-               (14, 10, 25, boss4_surf),
-               (14, 10, 25, boss5_surf),
-               (14, 10, 25, boss6_surf),
-               (14, 10, 25, boss7_surf),
-               (14, 10, 25, boss8_surf),
-               (14, 10, 25, boss9_surf),
-               (14, 10, 25, boss10_surf))
+boss_surfs = (boss1_surf, boss2_surf, boss3_surf, boss4_surf, boss5_surf,
+              boss6_surf, boss7_surf, boss8_surf, boss9_surf, boss10_surf)
