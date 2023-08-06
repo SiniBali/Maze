@@ -7,25 +7,24 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-monster_amount = 8
+monster_amount = 0
 boss_amount = 1
 coin_amount = 6
 potion_amount = 6
 well_amount = 1
 shop_amount = 1
 maze_level = 1
-player_gold = 0
+player_gold = 100000
 player_atk = 0
 player_dmg = 0
 player_def = 0
 player_max_hp = 0
 outside = True
 darkness = True
-boss_defeated = False
+boss_defeated = True
 quest_state = "not in progress"
 
 wall_surf = pygame.image.load("pictures/wall.png")
-tile_surf = pygame.image.load("pictures/tile.png")
 entrance_surf = pygame.image.load("pictures/entrance.png")
 exit_surf = pygame.image.load("pictures/exit.png")
 grid_surf = pygame.image.load("pictures/grid.png")
@@ -46,27 +45,40 @@ hit_surf = pygame.image.load("pictures/hit.png")
 block_surf = pygame.image.load("pictures/block.png")
 fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
 
+tile1_surf = pygame.image.load("pictures/tile1.png")
+tile2_surf = pygame.image.load("pictures/tile2.png")
+tile3_surf = pygame.image.load("pictures/tile3.png")
+tile4_surf = pygame.image.load("pictures/tile4.png")
+tile5_surf = pygame.image.load("pictures/tile5.png")
+tile6_surf = pygame.image.load("pictures/tile6.png")
+tile7_surf = pygame.image.load("pictures/tile7.png")
+tile8_surf = pygame.image.load("pictures/tile8.png")
+tile9_surf = pygame.image.load("pictures/tile9.png")
+tile10_surf = pygame.image.load("pictures/tile10.png")
+tile_surfs = (tile1_surf, tile2_surf, tile3_surf, tile4_surf, tile5_surf,
+              tile6_surf, tile7_surf, tile8_surf, tile9_surf, tile10_surf)
+
 monster1_surf = pygame.image.load("pictures/monster1.png")
 monster2_surf = pygame.image.load("pictures/monster2.png")
 monster3_surf = pygame.image.load("pictures/monster3.png")
 monster4_surf = pygame.image.load("pictures/monster4.png")
 monster5_surf = pygame.image.load("pictures/monster5.png")
-monster6_surf = pygame.image.load("pictures/monster5.png")
-monster7_surf = pygame.image.load("pictures/monster5.png")
-monster8_surf = pygame.image.load("pictures/monster5.png")
-monster9_surf = pygame.image.load("pictures/monster5.png")
-monster10_surf = pygame.image.load("pictures/monster5.png")
+monster6_surf = pygame.image.load("pictures/monster6.png")
+monster7_surf = pygame.image.load("pictures/monster7.png")
+monster8_surf = pygame.image.load("pictures/monster8.png")
+monster9_surf = pygame.image.load("pictures/monster9.png")
+monster10_surf = pygame.image.load("pictures/monster10.png")
 
 boss1_surf = pygame.image.load("pictures/boss1.png")
 boss2_surf = pygame.image.load("pictures/boss2.png")
 boss3_surf = pygame.image.load("pictures/boss3.png")
 boss4_surf = pygame.image.load("pictures/boss4.png")
 boss5_surf = pygame.image.load("pictures/boss5.png")
-boss6_surf = pygame.image.load("pictures/boss5.png")
-boss7_surf = pygame.image.load("pictures/boss5.png")
-boss8_surf = pygame.image.load("pictures/boss5.png")
-boss9_surf = pygame.image.load("pictures/boss5.png")
-boss10_surf = pygame.image.load("pictures/boss5.png")
+boss6_surf = pygame.image.load("pictures/boss6.png")
+boss7_surf = pygame.image.load("pictures/boss7.png")
+boss8_surf = pygame.image.load("pictures/boss8.png")
+boss9_surf = pygame.image.load("pictures/boss9.png")
+boss10_surf = pygame.image.load("pictures/boss9.png")
 
 rusty_dagger_surf = pygame.image.load("pictures/rusty_dagger.png")
 oak_staff_surf = pygame.image.load("pictures/oak_staff.png")
@@ -194,8 +206,8 @@ prologue_text = ("In the ancient land of Eldoria,",
                  "to confront an evil born from fear itself.",
                  "After a haunting vision, Valen ventures",
                  "into the Maze of Fear,",
-                 "where he must transcend the boundaries of",
-                 "courage, facing his inner demons",
+                 "where he must transcend the boundaries",
+                 "of courage, facing his inner demons",
                  "and the dreaded danger lurking within.",
                  " ",
                  "As Valen steps into the maze,",

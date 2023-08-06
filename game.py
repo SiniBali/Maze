@@ -89,7 +89,10 @@ def update_map():
     elif maze[x][y] == "health":
         found_animation(health_surf, health_sound)
         if player_hp < player_max_hp:
-            player_hp += maze_level * 5
+            if player_max_hp - player_hp >= maze_level * 5:
+                player_hp += maze_level * 5
+            else:
+                player_hp = player_max_hp
             maze[x][y] = "room"
     elif maze[x][y] == "well":
         found_animation(well_surf, chest_sound)
@@ -241,7 +244,7 @@ def shopping():
             printer("Dear adventurer, welcome in my tiny shop.", (10, tile_size * 2), highlighted_font, "purple")
             if quest_state == "not in progress":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: " \
-                             f"{maze_level * 15} gold"
+                             f"{maze_level * 50} gold"
             elif quest_state == "accepted":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / Accepted"
             else:
@@ -350,7 +353,8 @@ def main_menu():
         info_surf = menu_font.render("Press SPACE to start", True, "black")
         info_rect = info_surf.get_rect(center=(WIDTH / 2, 600))
         for number, sentence in enumerate(prologue_text):
-            printer(sentence, (65, 540 - int(counter) + 26 * number), prologue_font, "black")
+            printer(sentence, (70, 545 - int(counter) + 35 * number), prologue_font, "black")
+            printer(sentence, (65, 540 - int(counter) + 35 * number), prologue_font, "grey70")
         for x in range(dimension):
             for y in range(10):
                 place = (x * tile_size, y * tile_size)
@@ -362,7 +366,7 @@ def main_menu():
         screen.blit(maze_surf, game_name_rect)
         screen.blit(info_surf, info_rect)
         pygame.display.update()
-        counter += 0.15
+        counter += 0.2
         if counter > 800:
             counter = 0
         clock.tick(60)
@@ -552,7 +556,7 @@ def attack(who, action):
 
 def well():
     global darkness, player_hp, player_gold
-    chest_text = (f"A map, in cost of {player_hp - 1}HP. If you lost a fight, the map will disappear.",
+    chest_text = (f"A map, in cost of {int(player_hp * 0.9)}HP. If you lost a fight, the map will disappear.",
                   f"Heal for full HP (+{player_max_hp - player_hp}HP).",
                   f"A purse with {int(2.2 ** maze_level) * 15} gold.")
     done = False
@@ -584,7 +588,7 @@ def well():
                     if selected == 0:
                         win_sound.play()
                         darkness = False
-                        player_hp = 1
+                        player_hp -= int(player_hp * 0.9)
                     elif selected == 1:
                         player_hp = player_max_hp
                         health_sound.play()
@@ -595,6 +599,7 @@ def well():
         pygame.display.update()
 
 
+tile_surf = tile_surfs[maze_level - 1]
 pygame.mixer.music.play(-1)
 main_menu()
 
@@ -604,12 +609,12 @@ quest_item_quantity = int(randrange(4, 7) + maze_level)
 shop_list = new_shop_list()
 monster_atk = int(gears[maze_level + 10][1][3] * 0.8)  # 80% of player DEF (when not bought new gear yet in the shop)
 monster_def = int(gears[maze_level - 1][1][1] * 0.8)  # 80% of player ATK
-monster_dmg = int(gears[maze_level + 21][1][4] * 0.4)  # 40% of player HP
-monster_hp = int(gears[maze_level - 1][1][2] * 0.9)  # 90% of player DMG (one good hit can kill)
+monster_dmg = int(gears[maze_level + 21][1][4] * 0.3)  # 30% of player HP
+monster_hp = int(gears[maze_level - 1][1][2] * 0.8)  # 80% of player DMG (one good hit can kill)
 boss_atk = gears[maze_level + 11][1][3]  # equal with player DEF (when already bought new gear in the shop)
 boss_def = gears[maze_level][1][1]  # equal with player ATK
-boss_dmg = int(gears[maze_level + 22][1][4] * 0.5)  # 50% of player HP
-boss_hp = int(gears[maze_level][1][2] * 2.5)  # 250% of player DMG (min 3 good hit to defeat boss)
+boss_dmg = int(gears[maze_level + 22][1][4] * 0.4)  # 40% of player HP
+boss_hp = int(gears[maze_level][1][2] * 1.8)  # 180% of player DMG (min 2 good hit to defeat boss)
 new_level_sound.play()
 pygame.mixer.music.load("sounds/bg_sound.wav")
 pygame.mixer.music.play(-1)
@@ -641,23 +646,24 @@ while True:
                     darkness = True
                     maze_level += 1
                     maze_fade_in()
-                    boss_defeated = False
+                    boss_defeated = True
                     quest_state = "not in progress"
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(4, 7) + maze_level)
                     shop_list = new_shop_list()
                     monster_atk = int(gears[maze_level + 10][1][3] * 0.8)
                     monster_def = int(gears[maze_level - 1][1][1] * 0.8)
-                    monster_dmg = int(gears[maze_level + 21][1][4] * 0.4)
-                    monster_hp = int(gears[maze_level - 1][1][2] * 0.9)
+                    monster_dmg = int(gears[maze_level + 21][1][4] * 0.3)
+                    monster_hp = int(gears[maze_level - 1][1][2] * 0.8)
                     boss_atk = gears[maze_level + 11][1][3]
                     boss_def = gears[maze_level][1][1]
-                    boss_dmg = int(gears[maze_level + 22][1][4] * 0.5)
-                    boss_hp = int(gears[maze_level][1][2] * 2.5)
+                    boss_dmg = int(gears[maze_level + 22][1][4] * 0.4)
+                    boss_hp = int(gears[maze_level][1][2] * 1.8)
                     for y in range(1, dimension - 1, 2):
                         if maze[0][y] == "entrance":
                             player_position = [0, y]
                             break
+                    tile_surf = tile_surfs[maze_level - 1]
                 elif maze[player_position[0] + 1][player_position[1]] not in ("wall", "exit"):
                     player_position[0] += 1
                     choice((step0_sound, step1_sound)).play()
