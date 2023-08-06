@@ -7,14 +7,14 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-monster_amount = 7
+monster_amount = 8
 boss_amount = 1
 coin_amount = 6
-potion_amount = 4
+potion_amount = 6
 well_amount = 1
 shop_amount = 1
 maze_level = 1
-player_gold = 100000000
+player_gold = 0
 player_atk = 0
 player_dmg = 0
 player_def = 0
@@ -178,9 +178,32 @@ lose_sound = pygame.mixer.Sound("sounds/lose.wav")
 normal_font = pygame.font.Font(None, 22)
 highlighted_font = pygame.font.Font(None, 26)
 menu_font = pygame.font.Font(None, 40)
+prologue_font = pygame.font.Font(None, 35)
 
 monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
                  monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)
 
 boss_surfs = (boss1_surf, boss2_surf, boss3_surf, boss4_surf, boss5_surf,
               boss6_surf, boss7_surf, boss8_surf, boss9_surf, boss10_surf)
+
+prologue_text = ("In the ancient land of Eldoria,",
+                 "where magic and legends intertwine,",
+                 "a shadow of darkness has cast over",
+                 "the once-vibrant realm.",
+                 "A man known as Valen is destined",
+                 "to confront an evil born from fear itself.",
+                 "After a haunting vision, Valen ventures",
+                 "into the Maze of Fear,",
+                 "where he must transcend the boundaries of",
+                 "courage, facing his inner demons",
+                 "and the dreaded danger lurking within.",
+                 " ",
+                 "As Valen steps into the maze,",
+                 "reality warps around him, and challenges",
+                 "arise from his deeply rooted fears.",
+                 "Guided by an ancient prophecy,",
+                 "Valen navigates",
+                 "the perilous path of the maze,",
+                 "aiming to free Eldoria",
+                 "from the rising tide of darkness",
+                 "and restore balance.")

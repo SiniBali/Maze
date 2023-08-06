@@ -83,13 +83,13 @@ def update_map():
     elif maze[x][y] == "boss":
         found_animation(boss_surfs[maze_level - 1], boss_sound)
     elif maze[x][y] == "coin":
-        player_gold += maze_level
+        player_gold += maze_level * 5
         found_animation(coin_surf, coin_sound)
         maze[x][y] = "room"
     elif maze[x][y] == "health":
         found_animation(health_surf, health_sound)
         if player_hp < player_max_hp:
-            player_hp += maze_level
+            player_hp += maze_level * 5
             maze[x][y] = "room"
     elif maze[x][y] == "well":
         found_animation(well_surf, chest_sound)
@@ -159,8 +159,9 @@ def info_panel():
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
         printer("Press SPACE to enter shop", (10, tile_size), highlighted_font, "purple")
     else:
-        printer(f"Gold: {player_gold}     HP: {player_hp} / {player_max_hp}     Maze level: {maze_level}     "
-                f"ATK: {player_atk}     DEF: {player_def}", (10, tile_size), highlighted_font, "white")
+        printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    HP: {player_hp} / {player_max_hp}    "
+                f"ATK: {player_atk}    DMG: {player_dmg}    DEF: {player_def}",
+                (10, 28), normal_font, "white")
     if quest_state in ("accepted", "done"):
         printer(f"{quest_item_quantity}", (WIDTH - 34, tile_size), highlighted_font, "white")
         screen.blit(quest[2], (WIDTH - 70, 0))
@@ -333,6 +334,7 @@ def maze_fade_out():
 
 def main_menu():
     menu = True
+    counter = 0
     while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -344,12 +346,25 @@ def main_menu():
             for y in range(dimension + 1):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
-        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
-        screen.blit(maze_surf, game_name_rect)
+        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 200))
         info_surf = menu_font.render("Press SPACE to start", True, "black")
-        info_rect = info_surf.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 190))
+        info_rect = info_surf.get_rect(center=(WIDTH / 2, 600))
+        for number, sentence in enumerate(prologue_text):
+            printer(sentence, (65, 540 - int(counter) + 26 * number), prologue_font, "black")
+        for x in range(dimension):
+            for y in range(10):
+                place = (x * tile_size, y * tile_size)
+                screen.blit(tile_surf, place)
+        for x in range(dimension):
+            for y in range(16, 20):
+                place = (x * tile_size, y * tile_size)
+                screen.blit(tile_surf, place)
+        screen.blit(maze_surf, game_name_rect)
         screen.blit(info_surf, info_rect)
         pygame.display.update()
+        counter += 0.15
+        if counter > 800:
+            counter = 0
         clock.tick(60)
 
 
@@ -567,12 +582,15 @@ def well():
                         selected -= 1
                 if chest_event.key == pygame.K_SPACE:
                     if selected == 0:
+                        win_sound.play()
                         darkness = False
                         player_hp = 1
                     elif selected == 1:
                         player_hp = player_max_hp
+                        health_sound.play()
                     else:
-                        player_gold += int(2.1 ** maze_level) * 10
+                        player_gold += int(2.1 ** maze_level) * 30
+                        coin_sound.play()
                     done = True
         pygame.display.update()
 
