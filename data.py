@@ -14,14 +14,14 @@ potion_amount = 6
 well_amount = 1
 shop_amount = 1
 maze_level = 1
-player_gold = 100000
+player_gold = 0
 player_atk = 0
 player_dmg = 0
 player_def = 0
 player_max_hp = 0
 outside = True
 darkness = True
-boss_defeated = True
+boss_defeated = False
 quest_state = "not in progress"
 
 wall_surf = pygame.image.load("pictures/wall.png")
@@ -186,6 +186,7 @@ block_sound = pygame.mixer.Sound("sounds/block.wav")
 hit_sound = pygame.mixer.Sound("sounds/hit.wav")
 win_sound = pygame.mixer.Sound("sounds/fanfare.wav")
 lose_sound = pygame.mixer.Sound("sounds/lose.wav")
+transit_sound = pygame.mixer.Sound("sounds/transit.wav")
 
 normal_font = pygame.font.Font(None, 22)
 highlighted_font = pygame.font.Font(None, 26)
@@ -219,3 +220,8 @@ prologue_text = ("In the ancient land of Eldoria,",
                  "aiming to free Eldoria",
                  "from the rising tide of darkness",
                  "and restore balance.")
+
+transition_text = (("I was born in the ever-changing darkness ",
+                    "and feed on the power of fear."),
+                   ("I was created by the agony of the ancestors,",
+                    "and pain dwells within my walls."))
