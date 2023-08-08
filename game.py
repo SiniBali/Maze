@@ -337,6 +337,8 @@ def maze_fade_out():
 
 
 def main_menu():
+    pygame.mixer.music.load("sounds/menu.wav")
+    pygame.mixer.music.play(-1)
     menu = True
     counter = 0
     while menu:
@@ -350,18 +352,18 @@ def main_menu():
             for y in range(dimension + 1):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
-        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 200))
+        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 130))
         info_surf = menu_font.render("Press SPACE to start", True, "black")
-        info_rect = info_surf.get_rect(center=(WIDTH / 2, 600))
+        info_rect = info_surf.get_rect(center=(WIDTH / 2, 530))
         for number, sentence in enumerate(prologue_text):
-            printer(sentence, (70, 580 - int(counter) + 35 * number), prologue_font, "black")
-            printer(sentence, (65, 575 - int(counter) + 35 * number), prologue_font, "grey70")
+            printer(sentence, (70, 510 - int(counter) + 35 * number), prologue_font, "black")
+            printer(sentence, (65, 505 - int(counter) + 35 * number), prologue_font, "grey70")
         for x in range(dimension):
-            for y in range(9):
+            for y in range(7):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
         for x in range(dimension):
-            for y in range(17, 20):
+            for y in range(15, 20):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
         screen.blit(maze_surf, game_name_rect)
@@ -593,17 +595,60 @@ def well():
 
 def transition():
     transit_sound.play()
-    text = transition_text[maze_level - 1]
+    text = (poem_text[2 * maze_level - 2], poem_text[2 * maze_level - 1])
     for i in range(256):
         pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
         for number, sentence in enumerate(text):
-            printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), prologue_font, (i, i, i), "center")
+            printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), menu_font, (i, 0, 0), "center")
         pygame.display.update()
-        clock.tick(40)
+        clock.tick(35)
 
 
-tile_surf = tile_surfs[maze_level - 1]
-pygame.mixer.music.play(-1)
+def finish():
+    pygame.mixer.music.load("sounds/ending.wav")
+    pygame.mixer.music.play(-1)
+    length = len(poem_text)
+    run = True
+    counter = 0
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    run = False
+        for x in range(dimension):
+            for y in range(dimension + 1):
+                place = (x * tile_size, y * tile_size)
+                screen.blit(tile_surf, place)
+        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 130))
+        info_surf = menu_font.render("Press SPACE to end", True, "black")
+        info_rect = info_surf.get_rect(center=(WIDTH / 2, 530))
+        for i in range(length):
+            printer(poem_text[i], (40, 510 - int(counter) + 35 * (i + i//4)), prologue_font, "black")
+            printer(poem_text[i], (35, 505 - int(counter) + 35 * (i + i//4)), prologue_font, "grey70")
+        for x in range(dimension):
+            for y in range(7):
+                place = (x * tile_size, y * tile_size)
+                screen.blit(tile_surf, place)
+        for x in range(dimension):
+            for y in range(15, 20):
+                place = (x * tile_size, y * tile_size)
+                screen.blit(tile_surf, place)
+        screen.blit(maze_surf, game_name_rect)
+        screen.blit(info_surf, info_rect)
+        pygame.display.update()
+        counter += 0.2
+        if counter > 1500:
+            counter = 1500
+        clock.tick(60)
+        if not run:
+            pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
+            pygame.display.update()
+            pygame.mixer_music.fadeout(2000)
+            pygame.time.wait(2000)
+
+
 main_menu()
 
 maze = maze_generator()
@@ -645,10 +690,16 @@ while True:
                     grid_slam_sound.play()
                 if maze[player_position[0]][player_position[1]] == "exit":
                     maze_fade_out()
-                    maze = maze_generator()
-                    darkness = True
                     maze_level += 1
+                    if maze_level == 11:
+                        maze_level = 1
+                        finish()
+                        main_menu()
+                        pygame.mixer.music.load("sounds/bg_sound.wav")
+                        pygame.mixer.music.play(-1)
                     transition()
+                    maze = maze_generator()
+                    darkness = False
                     new_level_sound.play()
                     maze_fade_in()
                     boss_defeated = True
@@ -668,7 +719,6 @@ while True:
                         if maze[0][y] == "entrance":
                             player_position = [0, y]
                             break
-                    tile_surf = tile_surfs[maze_level - 1]
                 elif maze[player_position[0] + 1][player_position[1]] not in ("wall", "exit"):
                     player_position[0] += 1
                     choice((step0_sound, step1_sound)).play()

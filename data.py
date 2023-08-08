@@ -7,10 +7,10 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-monster_amount = 0
+monster_amount = 7
 boss_amount = 1
-coin_amount = 6
-potion_amount = 6
+coin_amount = 7
+potion_amount = 7
 well_amount = 1
 shop_amount = 1
 maze_level = 1
@@ -24,6 +24,7 @@ darkness = True
 boss_defeated = False
 quest_state = "not in progress"
 
+tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
 entrance_surf = pygame.image.load("pictures/entrance.png")
 exit_surf = pygame.image.load("pictures/exit.png")
@@ -44,19 +45,6 @@ egg_surf = pygame.image.load("pictures/egg.png")
 hit_surf = pygame.image.load("pictures/hit.png")
 block_surf = pygame.image.load("pictures/block.png")
 fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
-
-tile1_surf = pygame.image.load("pictures/tile1.png")
-tile2_surf = pygame.image.load("pictures/tile2.png")
-tile3_surf = pygame.image.load("pictures/tile3.png")
-tile4_surf = pygame.image.load("pictures/tile4.png")
-tile5_surf = pygame.image.load("pictures/tile5.png")
-tile6_surf = pygame.image.load("pictures/tile6.png")
-tile7_surf = pygame.image.load("pictures/tile7.png")
-tile8_surf = pygame.image.load("pictures/tile8.png")
-tile9_surf = pygame.image.load("pictures/tile9.png")
-tile10_surf = pygame.image.load("pictures/tile10.png")
-tile_surfs = (tile1_surf, tile2_surf, tile3_surf, tile4_surf, tile5_surf,
-              tile6_surf, tile7_surf, tile8_surf, tile9_surf, tile10_surf)
 
 monster1_surf = pygame.image.load("pictures/monster1.png")
 monster2_surf = pygame.image.load("pictures/monster2.png")
@@ -221,7 +209,23 @@ prologue_text = ("In the ancient land of Eldoria,",
                  "from the rising tide of darkness",
                  "and restore balance.")
 
-transition_text = (("I was born in the ever-changing darkness ",
-                    "and feed on the power of fear."),
-                   ("I was created by the agony of the ancestors,",
-                    "and pain dwells within my walls."))
+poem_text = ("In the Maze of Fears, a strong hero,",
+             "Where lies his fate, he must to know.",
+             "With courage bright, he stood their ground,",
+             "A world to save, where hope was found.",
+             "Monsters roared with eyes of fire,",
+             "Hero keeps on, never to tire.",
+             "Sword in hand and heart so bold,",
+             "Through darkness deep, he must behold.",
+             "In maze of dread he must be brave,",
+             "To raise the world from the monster's grave.",
+             "Fighting with strength, in the darkest of night,",
+             "He banished the monsters, set things right.",
+             "With a heart of gold and spirit true,",
+             "He fought for me, he fought for you.",
+             "In the Maze of Fears, he led the way,",
+             "Guiding us all to the light of day.",
+             "Monsters fell to the hero's might",
+             "Their roars silenced in the night.",
+             "In the annals of history, his tale will be,",
+             "A legend of courage, for eternity.")
