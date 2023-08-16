@@ -42,9 +42,12 @@ pearl_surf = pygame.image.load("pictures/pearl.png")
 log_surf = pygame.image.load("pictures/log.png")
 note_surf = pygame.image.load("pictures/note.png")
 egg_surf = pygame.image.load("pictures/egg.png")
+pear_surf = pygame.image.load("pictures/pear.png")
+arrow_surf = pygame.image.load("pictures/arrow.png")
 hit_surf = pygame.image.load("pictures/hit.png")
 block_surf = pygame.image.load("pictures/block.png")
 fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
+finish_surf = pygame.image.load("pictures/finish.png")
 
 monster1_surf = pygame.image.load("pictures/monster1.png")
 monster2_surf = pygame.image.load("pictures/monster2.png")
@@ -105,17 +108,17 @@ crystal_plate_surf = pygame.image.load("pictures/crystal_plate.png")
 rune_armor_surf = pygame.image.load("pictures/rune_armor.png")
 
 # item parameters: price, ATK, DMG, DEF, HP, surf
-gears = (("Rusty Dagger", (0, 12, 15, 0, 0), rusty_dagger_surf),
-         ("Oak Staff", (5, 18, 18, 0, 0), oak_staff_surf),
-         ("Iron Mace", (15, 30, 24, 0, 0), iron_mace_surf),
-         ("Steel Sword", (40, 45, 36, 0, 0), steel_sword_surf),
-         ("Shadow Blade", (120, 69, 60, 0, 0), shadow_blade_surf),
-         ("Flame Axe", (300, 90, 90, 0, 0), flame_axe_surf),
-         ("Venom Dagger", (680, 120, 135, 0, 0), venom_dagger_surf),
-         ("Lightning Spear", (1760, 195, 135, 0, 0), lightning_spear_surf),
-         ("Rune Staff", (3100, 225, 270, 0, 0), rune_staff_surf),
-         ("Holy Hammer", (8500, 300, 360, 0, 0), holy_hammer_surf),
-         ("Dragon Lance", (15000, 450, 480, 0, 0), dragon_lance_surf),
+gears = (("Rusty Dagger", (0, 12, 75, 0, 0), rusty_dagger_surf),
+         ("Oak Staff", (5, 18, 90, 0, 0), oak_staff_surf),
+         ("Iron Mace", (15, 30, 120, 0, 0), iron_mace_surf),
+         ("Steel Sword", (40, 45, 180, 0, 0), steel_sword_surf),
+         ("Shadow Blade", (120, 69, 360, 0, 0), shadow_blade_surf),
+         ("Flame Axe", (300, 90, 450, 0, 0), flame_axe_surf),
+         ("Venom Dagger", (680, 120, 675, 0, 0), venom_dagger_surf),
+         ("Lightning Spear", (1760, 195, 840, 0, 0), lightning_spear_surf),
+         ("Rune Staff", (3100, 225, 1135, 0, 0), rune_staff_surf),
+         ("Holy Hammer", (8500, 300, 1800, 0, 0), holy_hammer_surf),
+         ("Dragon Lance", (15000, 450, 2400, 0, 0), dragon_lance_surf),
 
          ("Rusty plate", (0, 0, 0, 15, 0), rusty_plate_surf),
          ("Wooden Buckler", (3, 0, 0, 21, 0), wooden_buckler_surf),
@@ -129,17 +132,17 @@ gears = (("Rusty Dagger", (0, 12, 15, 0, 0), rusty_dagger_surf),
          ("Holy Aegis", (12000, 0, 0, 330, 0), holy_aegis_surf),
          ("Crystal Tower", (18000, 0, 0, 495, 0), crystal_tower_surf),
 
-         ("Rag suit", (0, 0, 0, 0, 90), rag_suit_surf),
-         ("Linen Cloth", (4, 0, 0, 0, 150), linen_cloth_surf),
-         ("Chain Shirt", (4, 0, 0, 0, 240), chain_shirt_surf),
-         ("Steel Protector", (4, 0, 0, 0, 360), steel_protector_surf),
-         ("Shadow Cloak", (4, 0, 0, 0, 540), shadow_cloak_surf),
-         ("Flame Safeguard", (4, 0, 0, 0, 780), flame_safeguard_surf),
-         ("Venom Chainmail", (4, 0, 0, 0, 1170), venom_chainmail_surf),
-         ("Golden Mail", (4, 0, 0, 0, 1560), golden_mail_surf),
-         ("Rune Armor", (4, 0, 0, 0, 2070), rune_armor_surf),
-         ("Holy Armor", (4, 0, 0, 0, 2610), holy_armor_surf),
-         ("Crystal Plate", (4, 0, 0, 0, 3300), crystal_plate_surf))
+         ("Rag suit", (0, 0, 0, 0, 60), rag_suit_surf),
+         ("Linen Cloth", (4, 0, 0, 0, 80), linen_cloth_surf),
+         ("Chain Shirt", (10, 0, 0, 0, 120), chain_shirt_surf),
+         ("Steel Protector", (50, 0, 0, 0, 190), steel_protector_surf),
+         ("Shadow Cloak", (380, 0, 0, 0, 275), shadow_cloak_surf),
+         ("Flame Safeguard", (990, 0, 0, 0, 410), flame_safeguard_surf),
+         ("Venom Chainmail", (2540, 0, 0, 0, 575), venom_chainmail_surf),
+         ("Golden Mail", (3520, 0, 0, 0, 825), golden_mail_surf),
+         ("Rune Armor", (6500, 0, 0, 0, 1100), rune_armor_surf),
+         ("Holy Armor", (9000, 0, 0, 0, 1600), holy_armor_surf),
+         ("Crystal Plate", (14500, 0, 0, 0, 2500), crystal_plate_surf))
 
 wears = [gears[0],
          gears[11],
@@ -147,11 +150,13 @@ wears = [gears[0],
 
 player_hp = wears[2][1][4]
 
-quests = (("Too many rats are here.", "rat", rat_surf),
-          ("My pearls are rolled away.", "pearl", pearl_surf),
-          ("This rooms are so cold.", "log", log_surf),
-          ("The wind blow my notes.", "note", note_surf),
-          ("My hen lays egg anywhere.", "egg", egg_surf))
+quests = (("Too many rats are here.", "rats", rat_surf),
+          ("My pearls are rolled away.", "pearls", pearl_surf),
+          ("This rooms are so cold.", "logs", log_surf),
+          ("The wind blow my notes.", "notes", note_surf),
+          ("My hen lays egg anywhere.", "eggs", egg_surf),
+          ("I would eat some fruit.", "pears", pear_surf),
+          ("My quiver has run out.", "arrows", arrow_surf))
 
 pygame.mixer.music.load("sounds/menu.wav")
 grid_open_sound = pygame.mixer.Sound("sounds/grid_open.wav")
@@ -162,7 +167,12 @@ coin_sound = pygame.mixer.Sound("sounds/coin.wav")
 chest_sound = pygame.mixer.Sound("sounds/chest.wav")
 health_sound = pygame.mixer.Sound("sounds/health.wav")
 monster_sound = pygame.mixer.Sound("sounds/monster.wav")
-boss_sound = pygame.mixer.Sound("sounds/boss.wav")
+boss1_sound = pygame.mixer.Sound("sounds/boss1.wav")
+boss2_sound = pygame.mixer.Sound("sounds/boss2.wav")
+boss3_sound = pygame.mixer.Sound("sounds/boss3.wav")
+boss4_sound = pygame.mixer.Sound("sounds/boss4.wav")
+boss5_sound = pygame.mixer.Sound("sounds/boss5.wav")
+boss_sounds = (boss1_sound, boss2_sound, boss3_sound, boss4_sound, boss5_sound)
 shop_sound = pygame.mixer.Sound("sounds/shop.wav")
 new_level_sound = pygame.mixer.Sound("sounds/new_level.wav")
 rat_sound = pygame.mixer.Sound("sounds/rat.wav")
@@ -175,6 +185,7 @@ hit_sound = pygame.mixer.Sound("sounds/hit.wav")
 win_sound = pygame.mixer.Sound("sounds/fanfare.wav")
 lose_sound = pygame.mixer.Sound("sounds/lose.wav")
 transit_sound = pygame.mixer.Sound("sounds/transit.wav")
+wake_up_sound = pygame.mixer.Sound("sounds/wake-up.wav")
 
 normal_font = pygame.font.Font(None, 22)
 highlighted_font = pygame.font.Font(None, 26)
@@ -210,22 +221,22 @@ prologue_text = ("In the ancient land of Eldoria,",
                  "and restore balance.")
 
 poem_text = ("In the Maze of Fears, a strong hero,",
-             "Where lies his fate, he must to know.",
-             "With courage bright, he stood their ground,",
-             "A world to save, where hope was found.",
-             "Monsters roared with eyes of fire,",
-             "Hero keeps on, never to tire.",
-             "Sword in hand and heart so bold,",
-             "Through darkness deep, he must behold.",
+             "Where lies his fate, he want to know.",
+             "With bright courage, he step on his way,",
+             "A world to save, where hope gone away.",
+             "Monsters roar with eyes of fire.",
+             "Hero keeps on, he never tire.",
+             "Sword in hand and heart so true,",
+             "In darkness deep, he must break through.",
              "In maze of dread he must be brave,",
              "To raise the world from the monster's grave.",
-             "Fighting with strength, in the darkest of night,",
-             "He banished the monsters, set things right.",
+             "Fighting with strength, in the darkest night,",
+             "He banish the monsters, set things right.",
              "With a heart of gold and spirit true,",
-             "He fought for me, he fought for you.",
-             "In the Maze of Fears, he led the way,",
+             "He fight for me, he fight for you.",
+             "In the Maze of Fear, he find the way,",
              "Guiding us all to the light of day.",
-             "Monsters fell to the hero's might",
-             "Their roars silenced in the night.",
-             "In the annals of history, his tale will be,",
+             "Monsters fell to the hero's might,",
+             "Their roars becomes silent in the night.",
+             "In the annals of history, his tale will be",
              "A legend of courage, for eternity.")
