@@ -47,6 +47,7 @@ arrow_surf = pygame.image.load("pictures/arrow.png")
 hit_surf = pygame.image.load("pictures/hit.png")
 block_surf = pygame.image.load("pictures/block.png")
 fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
+gate_surf = pygame.image.load("pictures/gate.png")
 finish_surf = pygame.image.load("pictures/finish.png")
 
 monster1_surf = pygame.image.load("pictures/monster1.png")
@@ -69,7 +70,7 @@ boss6_surf = pygame.image.load("pictures/boss6.png")
 boss7_surf = pygame.image.load("pictures/boss7.png")
 boss8_surf = pygame.image.load("pictures/boss8.png")
 boss9_surf = pygame.image.load("pictures/boss9.png")
-boss10_surf = pygame.image.load("pictures/boss9.png")
+boss10_surf = pygame.image.load("pictures/boss10.png")
 
 rusty_dagger_surf = pygame.image.load("pictures/rusty_dagger.png")
 oak_staff_surf = pygame.image.load("pictures/oak_staff.png")
@@ -150,13 +151,13 @@ wears = [gears[0],
 
 player_hp = wears[2][1][4]
 
-quests = (("Too many rats are here.", "rats", rat_surf),
-          ("My pearls are rolled away.", "pearls", pearl_surf),
-          ("This rooms are so cold.", "logs", log_surf),
-          ("The wind blow my notes.", "notes", note_surf),
-          ("My hen lays egg anywhere.", "eggs", egg_surf),
-          ("I would eat some fruit.", "pears", pear_surf),
-          ("My quiver has run out.", "arrows", arrow_surf))
+quests = (("Too many rats are here.", "rat", rat_surf),
+          ("My pearls are rolled away.", "pearl", pearl_surf),
+          ("This rooms are so cold.", "log", log_surf),
+          ("The wind blow my notes.", "note", note_surf),
+          ("My hen lays egg anywhere.", "egg", egg_surf),
+          ("I would eat some fruit.", "pear", pear_surf),
+          ("My quiver has run out.", "arrow", arrow_surf))
 
 pygame.mixer.music.load("sounds/menu.wav")
 grid_open_sound = pygame.mixer.Sound("sounds/grid_open.wav")

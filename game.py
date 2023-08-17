@@ -146,6 +146,14 @@ def update_map():
         found_animation(egg_surf, chop_sound)
         quest_item_quantity -= 1
         maze[x][y] = "room"
+    elif maze[x][y] == "pear":
+        found_animation(pear_surf, chop_sound)
+        quest_item_quantity -= 1
+        maze[x][y] = "room"
+    elif maze[x][y] == "arrow":
+        found_animation(arrow_surf, chop_sound)
+        quest_item_quantity -= 1
+        maze[x][y] = "room"
     if not quest_item_quantity and quest_state == "accepted":
         quest_state = "done"
 
@@ -198,18 +206,18 @@ def found_animation(item, sound):
     x = player_position[0] * tile_size
     y = player_position[1] * tile_size + info_panel_height
     sound.play()
+    draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
+                wears[0][2], wears[1][2], wears[2][2], 1)
     for i in range(10):
-        scale_x = tile_size + tile_size * (i / 5)
-        scale_y = tile_size + tile_size * (i / 5)
+        scale_x = tile_size + tile_size * (i / 3)
+        scale_y = tile_size + tile_size * (i / 3)
         big_surf = pygame.transform.scale(item, (scale_x, scale_y))
         big_rect = big_surf.get_rect(center=(x + tile_size / 2, y + tile_size / 2))
         big_surf.set_alpha(int(255 - 255 * (i / 9)))
-        draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
-                    wears[0][2], wears[1][2], wears[2][2], 1)
         screen.blit(big_surf, big_rect)
         info_panel()
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(40)
 
 
 def new_shop_list():
@@ -264,10 +272,10 @@ def shopping():
             printer("Dear adventurer, welcome in my tiny shop.", (WIDTH / 2, tile_size + 18),
                     prologue_font, "black", "center")
             if quest_state == "not in progress":
-                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]} / quest reward: " \
+                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: " \
                              f"{2**maze_level * 40} gold"
             elif quest_state == "accepted":
-                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]} / Accepted"
+                quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / Accepted"
             else:
                 quest_text = f"Good job! Here is your {2**maze_level * 40} gold"
             for i in range(3):
@@ -375,14 +383,16 @@ def main_menu():
             for y in range(dimension + 1):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
-        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 130))
+        gate_rect = gate_surf.get_rect(topleft=(0, 4 * tile_size))
+        game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 70))
         info_surf = menu_font.render("Press SPACE to start", True, "black")
         info_rect = info_surf.get_rect(center=(WIDTH / 2, 562))
+        screen.blit(gate_surf, gate_rect)
         for number, sentence in enumerate(prologue_text):
-            printer(sentence, (70, 510 - int(counter) + 35 * number), prologue_font, "black")
-            printer(sentence, (65, 505 - int(counter) + 35 * number), prologue_font, "red")
+            printer(sentence, (70, 530 - int(counter) + 35 * number), prologue_font, "black")
+            printer(sentence, (68, 528 - int(counter) + 35 * number), prologue_font, "darkred")
         for x in range(dimension):
-            for y in range(7):
+            for y in range(4):
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
         for x in range(dimension):
@@ -392,7 +402,7 @@ def main_menu():
         screen.blit(maze_surf, game_name_rect)
         screen.blit(info_surf, info_rect)
         pygame.display.update()
-        counter += 0.3
+        counter += 0.25
         if counter > 1500:
             counter = 0
         clock.tick(60)
@@ -522,7 +532,7 @@ def attack(who, action):
     if who == "player":
         for i in range(40):
             fight_stage()
-            draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
+            draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2 - 20 + abs(20-i)), wears[0][2], wears[1][2], wears[2][2], 2)
             screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
@@ -538,7 +548,7 @@ def attack(who, action):
         for i in range(40):
             fight_stage()
             draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
-            screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2))
+            screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2 - 20 + abs(20-i)))
             info_panel()
             clock.tick(180)
             pygame.display.update()
@@ -631,6 +641,7 @@ def transition():
     for i in range(256):
         pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
         for number, sentence in enumerate(text):
+            printer(sentence, (WIDTH / 2 + 2, HEIGHT / 2 + 55 * number ), menu_font, (i/2, i/2, i/2), "center")
             printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), menu_font, (i, 0, 0), "center")
         pygame.display.update()
         clock.tick(35)
