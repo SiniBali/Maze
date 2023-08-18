@@ -75,6 +75,10 @@ def draw_map():
                     screen.blit(note_surf, place)
                 elif maze[x][y] == "egg":
                     screen.blit(egg_surf, place)
+                elif maze[x][y] == "pear":
+                    screen.blit(pear_surf, place)
+                elif maze[x][y] == "arrow":
+                    screen.blit(arrow_surf, place)
 
 
 def update_map():
