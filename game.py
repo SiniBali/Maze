@@ -192,17 +192,17 @@ def info_panel():
     pygame.draw.rect(screen, "grey30", (0, 0, WIDTH, info_panel_height))
     pygame.draw.rect(screen, "black", (0, 0, WIDTH, info_panel_height), 3)
     if maze[player_position[0]][player_position[1]] == "boss":
-        printer("Press SPACE to fight with boss", (WIDTH / 2, tile_size / 2), highlighted_font, "red", "center")
+        printer("Press SPACE to fight with boss", (WIDTH / 2, tile_size / 2), normal_font, "red", "center")
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
-        printer("Press SPACE to enter shop", (WIDTH / 2, tile_size / 2), highlighted_font, "red", "center")
+        printer("Press SPACE to enter shop", (WIDTH / 2, tile_size / 2), normal_font, "red", "center")
     else:
         printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    HP: {player_hp} / {player_max_hp}    "
-                f"ATK: {player_atk}    DMG: {player_dmg}    DEF: {player_def}",
-                (WIDTH / 2, tile_size / 2), normal_font, "white", "center")
+                f"ATK: {player_atk}    DEF: {player_def}    DMG: {player_dmg}",
+                (WIDTH / 2, tile_size / 2), small_font, "black", "center")
     if quest_state in ("accepted", "done"):
         pygame.draw.rect(screen, "grey30", (8 * tile_size, dimension * tile_size, 96, info_panel_height))
         pygame.draw.rect(screen, "black", (8 * tile_size, dimension * tile_size, 96, info_panel_height), 3)
-        printer(f"{quest_item_quantity}", (WIDTH / 2 - 24, dimension * tile_size + 30), highlighted_font, "white")
+        printer(f"{quest_item_quantity}", (WIDTH / 2 - 24, dimension * tile_size + 30), normal_font, "black")
         screen.blit(quest[2], (WIDTH / 2 + 8, dimension * tile_size))
 
 
@@ -213,15 +213,15 @@ def found_animation(item, sound):
     draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
                 wears[0][2], wears[1][2], wears[2][2], 1)
     for i in range(10):
-        scale_x = tile_size + tile_size * (i / 3)
-        scale_y = tile_size + tile_size * (i / 3)
+        scale_x = item.get_width() * (1 + i / 4)
+        scale_y = item.get_height() * (1 + i / 4)
         big_surf = pygame.transform.scale(item, (scale_x, scale_y))
         big_rect = big_surf.get_rect(center=(x + tile_size / 2, y + tile_size / 2))
         big_surf.set_alpha(int(255 - 255 * (i / 9)))
         screen.blit(big_surf, big_rect)
         info_panel()
         pygame.display.update()
-        clock.tick(40)
+        clock.tick(60)
 
 
 def new_shop_list():
@@ -274,7 +274,7 @@ def shopping():
             pygame.draw.rect(screen, "grey30", (0, tile_size, WIDTH, 7 * tile_size))
             pygame.draw.rect(screen, "black", (0, tile_size, WIDTH, 7 * tile_size), 3)
             printer("Dear adventurer, welcome in my tiny shop.", (WIDTH / 2, tile_size + 18),
-                    prologue_font, "black", "center")
+                    big_font, "black", "center")
             if quest_state == "not in progress":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: " \
                              f"{2**maze_level * 40} gold"
@@ -296,14 +296,14 @@ def shopping():
 
             for number, item in enumerate(shop_text):
                 if number == selected:
-                    font, col = highlighted_font, "green"
+                    font, col = normal_font, "green"
                     if selected < 3 and (player_gold < shop_list[selected][1][0]
                                          or wears[selected] == shop_list[selected]) \
                             or selected == 3 and (player_gold < player_max_hp - player_hp
                                                   or player_hp == player_max_hp):
                         col = "red"
                 else:
-                    font, col = normal_font, "white"
+                    font, col = small_font, "white"
                 printer(item[0], item[1], font, col, "center")
                 r_hand_surf = wears[0][2]
                 l_hand_surf = wears[1][2]
@@ -389,12 +389,10 @@ def main_menu():
                 screen.blit(tile_surf, place)
         gate_rect = gate_surf.get_rect(topleft=(0, 4 * tile_size))
         game_name_rect = maze_surf.get_rect(center=(WIDTH / 2, 70))
-        info_surf = menu_font.render("Press SPACE to start", True, "black")
-        info_rect = info_surf.get_rect(center=(WIDTH / 2, 562))
         screen.blit(gate_surf, gate_rect)
         for number, sentence in enumerate(prologue_text):
-            printer(sentence, (70, 530 - int(counter) + 35 * number), prologue_font, "black")
-            printer(sentence, (68, 528 - int(counter) + 35 * number), prologue_font, "darkred")
+            printer(sentence, (70, 530 - int(counter) + 45 * number), big_font, "black")
+            printer(sentence, (68, 528 - int(counter) + 45 * number), big_font, "darkred")
         for x in range(dimension):
             for y in range(4):
                 place = (x * tile_size, y * tile_size)
@@ -404,7 +402,8 @@ def main_menu():
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
         screen.blit(maze_surf, game_name_rect)
-        screen.blit(info_surf, info_rect)
+        printer("Press SPACE to start", (WIDTH / 2 + 2, 564), giant_font, "darkred", "center")
+        printer("Press SPACE to start", (WIDTH / 2, 562), giant_font, "black", "center")
         pygame.display.update()
         counter += 0.25
         if counter > 1500:
@@ -437,15 +436,15 @@ def monster_fight():
     fight_stage(start=True)
     while True:
         fight_stage()
-        printer("SPACE", (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
+        printer("SPACE", (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
         draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
         screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
         pygame.draw.rect(screen, "black", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56 * (player_hp / player_max_hp), 5))
         pygame.draw.rect(screen, "black", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56 * (opponent_hp / opponent_max_hp), 5))
-        printer(str(player_hp), (WIDTH / 2 - 90, HEIGHT / 2 - 8), normal_font, "white")
-        printer(str(opponent_hp), (WIDTH / 2 + 38, HEIGHT / 2 - 8), normal_font, "white")
+        printer(str(player_hp), (WIDTH / 2 - 90, HEIGHT / 2 - 8), small_font, "white")
+        printer(str(opponent_hp), (WIDTH / 2 + 38, HEIGHT / 2 - 8), small_font, "white")
         for fight_event in pygame.event.get():
             if fight_event.type == pygame.QUIT:
                 pygame.quit()
@@ -456,19 +455,20 @@ def monster_fight():
                             damage = int(player_dmg * attack("player", "hit"))
                             if maze[player_position[0]][player_position[1]] == "boss fight":
                                 boss_hp -= damage
-                            printer(str(-damage), (WIDTH / 2 + 45, HEIGHT / 2 - 70), highlighted_font, "red")
+                            printer(str(-damage), (WIDTH / 2 + 45, HEIGHT / 2 - 70), normal_font, "red")
                             pygame.display.update()
                             monster_ah_sound.play()
                             pygame.time.wait(1000)
                             opponent_hp -= damage
                             if opponent_hp <= 0:
+                                earn = randrange(int(1.8 ** maze_level * 6 * 0.7), int(1.8 ** maze_level * 6 * 1.3))
                                 pygame.draw.rect(screen, "black", (WIDTH / 2 - 98, HEIGHT / 2 + 64, 194, 24))
-                                printer(f"You win, and found {int(1.8 ** maze_level * 6)} gold",
-                                        (WIDTH / 2, HEIGHT / 2 + 80), highlighted_font, "white", "center")
+                                printer(f"You win, and found {earn} gold",
+                                        (WIDTH / 2, HEIGHT / 2 + 80), small_font, "white", "center")
                                 win_sound.play()
                                 pygame.display.update()
                                 pygame.time.wait(2000)
-                                player_gold += int(1.8 ** maze_level * 6)
+                                player_gold += earn
                                 coin_sound.play()
                                 return "win"
                             else:
@@ -479,14 +479,14 @@ def monster_fight():
                     elif state == "defense":
                         if choice(range(0, 100)) < 50 * (opponent_atk / player_def):
                             damage = int(opponent_dmg * (1 - attack("monster", "hit")))
-                            printer(str(-damage), (WIDTH / 2 - 78, HEIGHT / 2 - 70), highlighted_font, "red")
+                            printer(str(-damage), (WIDTH / 2 - 78, HEIGHT / 2 - 70), normal_font, "red")
                             pygame.display.update()
                             player_ah_sound.play()
                             pygame.time.wait(1000)
                             player_hp -= damage
                             if player_hp <= 0:
                                 pygame.draw.rect(screen, "black", (WIDTH / 2 - 98, HEIGHT / 2 + 64, 194, 24))
-                                printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), highlighted_font,
+                                printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), small_font,
                                         "red")
                                 lose_sound.play()
                                 for i in range(256):
@@ -517,6 +517,23 @@ def fight_stage(start=False):
     pygame.draw.rect(screen, "black", (0, info_panel_height, WIDTH, HEIGHT))
     surf = pygame.transform.scale(fight_stage_surf, (320, 128))
     rect = surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    printer("PLAYER", (40, 270), small_font, "aqua")
+    printer(f"ATK: {player_atk}", (40, 295), small_font, "white")
+    printer(f"DEF: {player_def}", (40, 320), small_font, "white")
+    printer(f"HP: {player_hp}", (40, 345), small_font, "white")
+    printer(f"DMG: {player_dmg}", (40, 370), small_font, "white")
+    if maze[player_position[0]][player_position[1]] == "boss fight":
+        printer("BOSS", (490, 270), small_font, "aqua")
+        printer(f"ATK: {boss_atk}", (490, 295), small_font, "white")
+        printer(f"DEF: {boss_def}", (490, 320), small_font, "white")
+        printer(f"HP: {boss_hp}", (40, 345), small_font, "white")
+        printer(f"DMG: {boss_dmg}", (490, 370), small_font, "white")
+    else:
+        printer("MONSTER", (490, 270), small_font, "aqua")
+        printer(f"ATK: {monster_atk}", (490, 295), small_font, "white")
+        printer(f"DEF: {monster_def}", (490, 320), small_font, "white")
+        printer(f"HP: {monster_hp}", (490, 345), small_font, "white")
+        printer(f"DMG: {monster_dmg}", (490, 370), small_font, "white")
     screen.blit(surf, rect)
 
 
@@ -542,7 +559,7 @@ def attack(who, action):
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 + 32, HEIGHT / 2 - 64))
-        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
         info_panel()
         pygame.display.update()
         if action == "block":
@@ -557,7 +574,7 @@ def attack(who, action):
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 - 96, HEIGHT / 2 - 64))
-        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), highlighted_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
         info_panel()
         clock.tick(60)
         pygame.display.update()
@@ -566,6 +583,7 @@ def attack(who, action):
         pygame.time.wait(600)
     value = 1
     counter = 0
+    selected = 0
     while wait:
         if counter == 60:
             counter = 0
@@ -575,14 +593,26 @@ def attack(who, action):
 
         if action == "hit":
             if who == "player":
-                text, rgb = "ATK power", (192, 0, 0)
+                text, rgb = "DAMAGE", (192, 0, 0)
             else:
-                text, rgb = "DEF power ", (0, 192, 0)
+                text, rgb = "DEFENCE", (0, 192, 0)
             pygame.draw.rect(screen, "black", (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 64, (value / 304) * 96, 24))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 96, HEIGHT / 2 + 64, (value / 304) * 96, 24))
-            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 90), highlighted_font, "white")
+            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 90), small_font, "white")
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24), 2)
+            pygame.draw.rect(screen, "black", (120, 393, 362, 80))
+            if who == "player":
+                spells = atk_spells
+            elif who == "monster":
+                spells = def_spells
+            for number, spell in enumerate(spells):
+                double_surf = pygame.transform.scale(spell[1], (32, 32))
+                if number == selected:
+                    pygame.draw.rect(screen, "lightblue", (194 + number * 36, 397, 36, 36), 2)
+                    printer(spell[0], (WIDTH/2, 447), normal_font, "white", "center")
+                pygame.draw.rect(screen, "grey20", (196 + number * 36, 400, 32, 32))
+                screen.blit(double_surf, (196 + number * 36, 400))
             clock.tick(60)
             pygame.display.update()
 
@@ -593,6 +623,12 @@ def attack(who, action):
                     if fight_event.key == pygame.K_SPACE:
                         if action == "hit":
                             return value / 304  # factor (between 0 - 1)
+                    if fight_event.key == pygame.K_RIGHT:
+                        if selected < 9:
+                            selected += 1
+                    if fight_event.key == pygame.K_LEFT:
+                        if selected > 0:
+                            selected -= 1
 
 
 def well():
@@ -607,12 +643,12 @@ def well():
         pygame.draw.rect(screen, "grey30", (0, tile_size, WIDTH, 4 * tile_size))
         pygame.draw.rect(screen, "black", (0, tile_size, WIDTH, 4 * tile_size), 3)
         printer("I am a Wishing Well. Tell me what you desire:", (WIDTH / 2, tile_size * 2 - 13),
-                prologue_font, "black", "center")
+                big_font, "black", "center")
         for count, text in enumerate(chest_text):
             if count == selected:
-                font, col = highlighted_font, "green"
+                font, col = normal_font, "green"
             else:
-                font, col = normal_font, "white"
+                font, col = small_font, "white"
             printer(text, (WIDTH / 2, tile_size * (3 + count) - 13), font, col, "center")
         for chest_event in pygame.event.get():
             if chest_event.type == pygame.QUIT:
@@ -645,10 +681,10 @@ def transition():
     for i in range(256):
         pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
         for number, sentence in enumerate(text):
-            printer(sentence, (WIDTH / 2 + 2, HEIGHT / 2 + 55 * number ), menu_font, (i/2, i/2, i/2), "center")
-            printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), menu_font, (i, 0, 0), "center")
+            printer(sentence, (WIDTH / 2 + 2, HEIGHT / 2 + 55 * number + 2), giant_font, (i / 2, i / 2, i / 2), "center")
+            printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), giant_font, (i, 0, 0), "center")
         pygame.display.update()
-        clock.tick(35)
+        clock.tick(40)
 
 
 def finish():
@@ -669,12 +705,12 @@ def finish():
                 place = (x * tile_size, y * tile_size)
                 screen.blit(tile_surf, place)
         finish_rect = finish_surf.get_rect(topleft=(0, 4 * tile_size))
-        info_surf = menu_font.render("Press SPACE to end", True, "black")
+        info_surf = giant_font.render("Press SPACE to end", True, "black")
         info_rect = info_surf.get_rect(center=(WIDTH / 2, 562))
         screen.blit(finish_surf, finish_rect)
         for i in range(length):
-            printer(poem_text[i], (40, 510 - int(counter) + 35 * (i + i // 4)), prologue_font, "black")
-            printer(poem_text[i], (37, 508 - int(counter) + 35 * (i + i // 4)), prologue_font, "red")
+            printer(poem_text[i], (90, 510 - int(counter) + 45 * (i + i // 4)), big_font, "black")
+            printer(poem_text[i], (87, 508 - int(counter) + 45 * (i + i // 4)), big_font, "red")
         for x in range(dimension):
             for y in range(4):
                 place = (x * tile_size, y * tile_size)
@@ -806,7 +842,7 @@ while True:
                             wears[0][2], wears[1][2], wears[2][2], 1)
                         draw_rect_alpha(screen, (0, 0, 0, 255 - i), (0, 0, WIDTH, HEIGHT + info_panel_height))
                         pygame.display.update()
-                        clock.tick(60)
+                        clock.tick(40)
             update_map()
 
     draw_map()

@@ -151,6 +151,29 @@ wears = [gears[0],
 
 player_hp = wears[2][1][4]
 
+spell_bleeding_surf = pygame.image.load("pictures/spell_bleeding.png")
+spell_healing_surf = pygame.image.load("pictures/spell_healing.png")
+spell_mirror_surf = pygame.image.load("pictures/spell_mirror.png")
+spell_magic_shield_surf = pygame.image.load("pictures/spell_magic_shield.png")
+spell_freezing_surf = pygame.image.load("pictures/spell_freezing.png")
+spell_double_damage_surf = pygame.image.load("pictures/spell_double_damage.png")
+spell_familiar_surf = pygame.image.load("pictures/spell_familiar.png")
+spell_burning_surf = pygame.image.load("pictures/spell_burning.png")
+spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
+spell_haste_surf = pygame.image.load("pictures/spell_haste.png")
+def_spells = (("Healing", spell_healing_surf, "description"),
+              ("Mirror", spell_mirror_surf, "description"),
+              ("Magic Shield", spell_magic_shield_surf, "description"),
+              ("Freezing", spell_freezing_surf, "description"),
+              ("Familiar", spell_familiar_surf, "description"),
+              ("Pickpocket", spell_pickpocket_surf, "description"))
+atk_spells = (("Bleeding", spell_bleeding_surf, "description"),
+              ("Double Damage", spell_double_damage_surf, "description"),
+              ("Burning", spell_burning_surf, "description"),
+              ("Haste", spell_haste_surf, "description"),
+              ("Familiar", spell_familiar_surf, "description"),
+              ("Pickpocket", spell_pickpocket_surf, "description"))
+
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
           ("This rooms are so cold.", "log", log_surf),
@@ -188,10 +211,10 @@ lose_sound = pygame.mixer.Sound("sounds/lose.wav")
 transit_sound = pygame.mixer.Sound("sounds/transit.wav")
 wake_up_sound = pygame.mixer.Sound("sounds/wake-up.wav")
 
-normal_font = pygame.font.Font(None, 22)
-highlighted_font = pygame.font.Font(None, 26)
-menu_font = pygame.font.Font(None, 40)
-prologue_font = pygame.font.Font(None, 35)
+small_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 22)
+normal_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 25)
+big_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 32)
+giant_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 40)
 
 monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
                  monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)
