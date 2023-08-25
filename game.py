@@ -462,7 +462,7 @@ def monster_fight():
                             opponent_hp -= damage
                             if opponent_hp <= 0:
                                 earn = randrange(int(1.8 ** maze_level * 6 * 0.7), int(1.8 ** maze_level * 6 * 1.3))
-                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 98, HEIGHT / 2 + 64, 194, 24))
+                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
                                 printer(f"You win, and found {earn} gold",
                                         (WIDTH / 2, HEIGHT / 2 + 80), small_font, "white", "center")
                                 win_sound.play()
@@ -485,7 +485,7 @@ def monster_fight():
                             pygame.time.wait(1000)
                             player_hp -= damage
                             if player_hp <= 0:
-                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 98, HEIGHT / 2 + 64, 194, 24))
+                                pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
                                 printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), small_font,
                                         "red")
                                 lose_sound.play()
@@ -596,23 +596,33 @@ def attack(who, action):
                 text, rgb = "DAMAGE", (192, 0, 0)
             else:
                 text, rgb = "DEFENCE", (0, 192, 0)
-            pygame.draw.rect(screen, "black", (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24))
-            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 64, (value / 304) * 96, 24))
-            pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 96, HEIGHT / 2 + 64, (value / 304) * 96, 24))
-            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 90), small_font, "white")
-            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 96, HEIGHT / 2 + 64, 192, 24), 2)
-            pygame.draw.rect(screen, "black", (120, 393, 362, 80))
-            if who == "player":
-                spells = atk_spells
-            elif who == "monster":
-                spells = def_spells
+            pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 66, (value / 304) * 160, 24))
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 160, HEIGHT / 2 + 66, (value / 304) * 160, 24))
+            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 92), small_font, "white")
+            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 160, HEIGHT / 2 + 66, 320, 24), 2)
+            steal = (1.5 ** maze_level * 4)
+            if who == "monster":
+                spells = ((f"HEAL - restore {int(player_max_hp / 4)} health", spell_healing_surf),
+                          ("MIRROR - reflects damage back", spell_mirror_surf),
+                          (f"MAGIC SHIELD - absorbs {int(player_max_hp / 2)} damage", spell_magic_shield_surf),
+                          ("FREEZING - stops enemy attack", spell_freezing_surf),
+                          ("FAMULUS - summons a helper", spell_famulus_surf),
+                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} from enemy", spell_pickpocket_surf))
+            elif who == "player":
+                spells = ((f"BLEEDING - {int(player_dmg / 4)} damage during 3 turns", spell_bleeding_surf),
+                          ("POWER - gives double damage", spell_double_damage_surf),
+                          ("DEATH - instant kill if enemy under 10% HP", spell_death_surf),
+                          ("HASTE - player able to attack twice", spell_haste_surf),
+                          ("FAMULUS - summons a helper", spell_famulus_surf),
+                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} from enemy", spell_pickpocket_surf))
             for number, spell in enumerate(spells):
                 double_surf = pygame.transform.scale(spell[1], (32, 32))
                 if number == selected:
-                    pygame.draw.rect(screen, "lightblue", (194 + number * 36, 397, 36, 36), 2)
+                    pygame.draw.rect(screen, "lightblue", (144 + number * 57, 397, 36, 36), 2)
                     printer(spell[0], (WIDTH/2, 447), normal_font, "white", "center")
-                pygame.draw.rect(screen, "grey20", (196 + number * 36, 400, 32, 32))
-                screen.blit(double_surf, (196 + number * 36, 400))
+                pygame.draw.rect(screen, "grey20", (146 + number * 57, 400, 32, 32))
+                screen.blit(double_surf, (146 + number * 57, 400))
             clock.tick(60)
             pygame.display.update()
 
@@ -624,7 +634,7 @@ def attack(who, action):
                         if action == "hit":
                             return value / 304  # factor (between 0 - 1)
                     if fight_event.key == pygame.K_RIGHT:
-                        if selected < 9:
+                        if selected < 5:
                             selected += 1
                     if fight_event.key == pygame.K_LEFT:
                         if selected > 0:
