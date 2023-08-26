@@ -36,8 +36,8 @@ def draw_map():
             k = dimension - 1 - player_position[1]
         else:
             k = 4
-        r1, r2, r3, r4 = h + player_position[0], i + player_position[0] + 1,\
-            j + player_position[1], k + player_position[1] + 1
+        r1, r2, r3, r4 = h + player_position[0], i + player_position[0] + 1, \
+                         j + player_position[1], k + player_position[1] + 1
     for x in range(r1, r2):
         for y in range(r3, r4):
             place = (x * tile_size, y * tile_size + info_panel_height)
@@ -163,6 +163,7 @@ def update_map():
 
 
 def draw_player(position, r_hand, l_hand, body, size):
+    global magic_shield
     x, y = position[0], position[1]
     player = player_surf
     if maze[player_position[0]][player_position[1]] == "entrance":
@@ -180,10 +181,13 @@ def draw_player(position, r_hand, l_hand, body, size):
         r_hand = pygame.transform.scale(r_hand, (32 * size, 32 * size))
         l_hand = pygame.transform.scale(l_hand, (32 * size, 32 * size))
         body = pygame.transform.scale(body, (32 * size, 32 * size))
+    if magic_shield:
+        screen.blit(pygame.transform.scale(magic_shield_surf, (32 * size, 32 * size)), (x + x_dif, y + y_dif))
     screen.blit(player, (x + x_dif, y + y_dif))
     screen.blit(body, (x + x_dif, y + y_dif))
     screen.blit(r_hand, (x + x_dif, y + y_dif))
     screen.blit(l_hand, (x + x_dif, y + y_dif))
+
     if darkness and size == 1:
         screen.blit(mask_surf, (x - 128, y - 128))
 
@@ -192,13 +196,13 @@ def info_panel():
     pygame.draw.rect(screen, "grey30", (0, 0, WIDTH, info_panel_height))
     pygame.draw.rect(screen, "black", (0, 0, WIDTH, info_panel_height), 3)
     if maze[player_position[0]][player_position[1]] == "boss":
-        printer("Press SPACE to fight with boss", (WIDTH / 2, tile_size / 2), normal_font, "red", "center")
+        printer("Press SPACE to fight with boss", (WIDTH / 2, tile_size / 2), normal_font, "white", "center")
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
-        printer("Press SPACE to enter shop", (WIDTH / 2, tile_size / 2), normal_font, "red", "center")
+        printer("Press SPACE to enter shop", (WIDTH / 2, tile_size / 2), normal_font, "white", "center")
     else:
         printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    HP: {player_hp} / {player_max_hp}    "
                 f"ATK: {player_atk}    DEF: {player_def}    DMG: {player_dmg}",
-                (WIDTH / 2, tile_size / 2), small_font, "black", "center")
+                (WIDTH / 2, tile_size / 2), normal_font, "black", "center")
     if quest_state in ("accepted", "done"):
         pygame.draw.rect(screen, "grey30", (8 * tile_size, dimension * tile_size, 96, info_panel_height))
         pygame.draw.rect(screen, "black", (8 * tile_size, dimension * tile_size, 96, info_panel_height), 3)
@@ -256,7 +260,7 @@ def shopping():
                             quest_state = "accepted"
                             quest_item_placing(maze, quest_item_quantity, quest[1])
                         if quest_state == "done":
-                            player_gold += 2**maze_level * 40
+                            player_gold += 2 ** maze_level * 40
                             coin_sound.play()
                             quest_state = "not in progress"
                             quest = choice(quests)
@@ -274,25 +278,25 @@ def shopping():
             pygame.draw.rect(screen, "grey30", (0, tile_size, WIDTH, 7 * tile_size))
             pygame.draw.rect(screen, "black", (0, tile_size, WIDTH, 7 * tile_size), 3)
             printer("Dear adventurer, welcome in my tiny shop.", (WIDTH / 2, tile_size + 18),
-                    big_font, "black", "center")
+                    big_font, "lightblue", "center")
             if quest_state == "not in progress":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / quest reward: " \
-                             f"{2**maze_level * 40} gold"
+                             f"{2 ** maze_level * 40} gold"
             elif quest_state == "accepted":
                 quest_text = f"{quest[0]} Please bring {quest_item_quantity} {quest[1]}s / Accepted"
             else:
-                quest_text = f"Good job! Here is your {2**maze_level * 40} gold"
+                quest_text = f"Good job! Here is your {2 ** maze_level * 40} gold"
             for i in range(3):
                 if wears[i] == shop_list[i]:
-                    shop_text.append((f"You already bought {shop_list[i][0]}", (WIDTH / 2, tile_size * (i + 3) - 13)))
+                    shop_text.append((f"You already bought {shop_list[i][0]}", (WIDTH / 2, tile_size * (i + 3) - 16)))
                 else:
                     shop_text.append((f"Buy {shop_list[i][0]} / {shop_list[i][1][0]} gold",
-                                      (WIDTH / 2, tile_size * (i + 3) - 13)))
+                                      (WIDTH / 2, tile_size * (i + 3) - 16)))
             shop_text.append(
                 (f"For a small fee, I can heal you / {player_max_hp - player_hp} gold",
-                 (WIDTH / 2, tile_size * 6 - 13)))
-            shop_text.append((quest_text, (WIDTH / 2, tile_size * 7 - 13)))
-            shop_text.append(("Good luck on your journey!", (WIDTH / 2, tile_size * 8 - 13)))
+                 (WIDTH / 2, tile_size * 6 - 16)))
+            shop_text.append((quest_text, (WIDTH / 2, tile_size * 7 - 16)))
+            shop_text.append(("Good luck on your journey!", (WIDTH / 2, tile_size * 8 - 16)))
 
             for number, item in enumerate(shop_text):
                 if number == selected:
@@ -315,6 +319,7 @@ def shopping():
                         l_hand_surf = shop_list[selected][2]
                     elif selected == 2:
                         body_surf = shop_list[selected][2]
+                    pygame.draw.rect(screen, "grey30", (15 * tile_size, 1 * tile_size + info_panel_height, 96, 96))
                     draw_player((15 * tile_size, 1 * tile_size + info_panel_height),
                                 r_hand_surf, l_hand_surf, body_surf, 3)
             draw_player((32, 1 * tile_size + info_panel_height), wears[0][2], wears[1][2], wears[2][2], 3)
@@ -328,6 +333,8 @@ def printer(text, pos, font, col, align="bottomleft"):
         rect = surf.get_rect(bottomleft=(pos[0], pos[1] - 4))
     elif align == "center":
         rect = surf.get_rect(center=(pos[0], pos[1]))
+    if align == "bottomright":
+        rect = surf.get_rect(bottomright=(pos[0], pos[1] - 4))
     screen.blit(surf, rect)
 
 
@@ -422,7 +429,7 @@ def quest_item_placing(maze, number, item):
 
 
 def monster_fight():
-    global player_hp, boss_hp, player_gold
+    global player_hp, boss_hp, player_gold, opponent_hp, mirror, magic_shield, freezing
     if maze[player_position[0]][player_position[1]] == "boss fight":
         opponent_surface = boss_surfs[maze_level - 1]
         opponent_atk, opponent_dmg, opponent_def, opponent_hp = boss_atk, boss_dmg, boss_def, boss_hp
@@ -436,15 +443,15 @@ def monster_fight():
     fight_stage(start=True)
     while True:
         fight_stage()
-        printer("SPACE", (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
+        printer("SPACE", (WIDTH / 2 - 25, HEIGHT / 2 + 90), normal_font, "white")
         draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
         screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
         pygame.draw.rect(screen, "black", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (WIDTH / 2 - 90, HEIGHT / 2 - 8, 56 * (player_hp / player_max_hp), 5))
         pygame.draw.rect(screen, "black", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56, 5))
         pygame.draw.rect(screen, "red", (WIDTH / 2 + 38, HEIGHT / 2 - 8, 56 * (opponent_hp / opponent_max_hp), 5))
-        printer(str(player_hp), (WIDTH / 2 - 90, HEIGHT / 2 - 8), small_font, "white")
-        printer(str(opponent_hp), (WIDTH / 2 + 38, HEIGHT / 2 - 8), small_font, "white")
+        printer(str(player_hp), (WIDTH / 2 - 90, HEIGHT / 2 - 8), normal_font, "white")
+        printer(str(opponent_hp), (WIDTH / 2 + 38, HEIGHT / 2 - 8), normal_font, "white")
         for fight_event in pygame.event.get():
             if fight_event.type == pygame.QUIT:
                 pygame.quit()
@@ -453,8 +460,6 @@ def monster_fight():
                     if state == "attack":
                         if choice(range(0, 100)) < 50 * (player_atk / opponent_def):
                             damage = int(player_dmg * attack("player", "hit"))
-                            if maze[player_position[0]][player_position[1]] == "boss fight":
-                                boss_hp -= damage
                             printer(str(-damage), (WIDTH / 2 + 45, HEIGHT / 2 - 70), normal_font, "red")
                             pygame.display.update()
                             monster_ah_sound.play()
@@ -464,7 +469,7 @@ def monster_fight():
                                 earn = randrange(int(1.8 ** maze_level * 6 * 0.7), int(1.8 ** maze_level * 6 * 1.3))
                                 pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
                                 printer(f"You win, and found {earn} gold",
-                                        (WIDTH / 2, HEIGHT / 2 + 80), small_font, "white", "center")
+                                        (WIDTH / 2, HEIGHT / 2 + 80), normal_font, "white", "center")
                                 win_sound.play()
                                 pygame.display.update()
                                 pygame.time.wait(2000)
@@ -479,14 +484,46 @@ def monster_fight():
                     elif state == "defense":
                         if choice(range(0, 100)) < 50 * (opponent_atk / player_def):
                             damage = int(opponent_dmg * (1 - attack("monster", "hit")))
-                            printer(str(-damage), (WIDTH / 2 - 78, HEIGHT / 2 - 70), normal_font, "red")
+                            pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 - 100, 400, 30))
+                            if mirror:
+                                mirror = False
+                                printer(str(-damage), (WIDTH / 2 - 12, HEIGHT / 2 - 70), normal_font, "red")
+                                pygame.display.update()
+                                monster_ah_sound.play()
+                                opponent_hp -= damage
+                                fight_attributes()
+                                pygame.time.wait(1000)
+                                if opponent_hp <= 0:
+                                    earn = randrange(int(1.8 ** maze_level * 6 * 0.7), int(1.8 ** maze_level * 6 * 1.3))
+                                    pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
+                                    printer(f"You win, and found {earn} gold",
+                                            (WIDTH / 2, HEIGHT / 2 + 80), normal_font, "white", "center")
+                                    win_sound.play()
+                                    pygame.display.update()
+                                    pygame.time.wait(2000)
+                                    player_gold += earn
+                                    coin_sound.play()
+                                    return "win"
+                            elif freezing:
+                                freezing = False
+                                screen.blit(pygame.transform.scale(spell_freezing_surf, (32, 32)),
+                                            (WIDTH / 2 - 32, HEIGHT / 2 + 16))
+                                freeze_spell_sound.play()
+                            else:
+                                printer(str(-damage), (WIDTH / 2 - 78, HEIGHT / 2 - 70), normal_font, "red")
+                                if magic_shield >= damage:
+                                    magic_shield -= damage
+                                    damage = 0
+                                elif 0 < magic_shield < damage:
+                                    damage -= magic_shield
+                                    magic_shield = 0
+                                player_hp -= damage
+                                player_ah_sound.play()
                             pygame.display.update()
-                            player_ah_sound.play()
                             pygame.time.wait(1000)
-                            player_hp -= damage
                             if player_hp <= 0:
                                 pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
-                                printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), small_font,
+                                printer("You've been knocked out", (WIDTH / 2 - 90, HEIGHT / 2 + 90), normal_font,
                                         "red")
                                 lose_sound.play()
                                 for i in range(256):
@@ -517,27 +554,39 @@ def fight_stage(start=False):
     pygame.draw.rect(screen, "black", (0, info_panel_height, WIDTH, HEIGHT))
     surf = pygame.transform.scale(fight_stage_surf, (320, 128))
     rect = surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    screen.blit(surf, rect)
+    fight_attributes()
+
+
+def fight_attributes():
+    global opponent_hp
+    pygame.draw.rect(screen, "black", (10, 240, 130, 125))
+    pygame.draw.rect(screen, "black", (470, 240, 130, 125))
     printer("PLAYER", (40, 270), small_font, "aqua")
     printer(f"ATK: {player_atk}", (40, 295), small_font, "white")
     printer(f"DEF: {player_def}", (40, 320), small_font, "white")
-    printer(f"HP: {player_hp}", (40, 345), small_font, "white")
+    if magic_shield:
+        printer(f"HP: {player_hp} (+{magic_shield})", (40, 345), small_font, "white")
+    else:
+        printer(f"HP: {player_hp}", (40, 345), small_font, "white")
     printer(f"DMG: {player_dmg}", (40, 370), small_font, "white")
     if maze[player_position[0]][player_position[1]] == "boss fight":
         printer("BOSS", (490, 270), small_font, "aqua")
         printer(f"ATK: {boss_atk}", (490, 295), small_font, "white")
         printer(f"DEF: {boss_def}", (490, 320), small_font, "white")
-        printer(f"HP: {boss_hp}", (40, 345), small_font, "white")
+        printer(f"HP: {opponent_hp}", (490, 345), small_font, "white")
         printer(f"DMG: {boss_dmg}", (490, 370), small_font, "white")
     else:
         printer("MONSTER", (490, 270), small_font, "aqua")
         printer(f"ATK: {monster_atk}", (490, 295), small_font, "white")
         printer(f"DEF: {monster_def}", (490, 320), small_font, "white")
-        printer(f"HP: {monster_hp}", (490, 345), small_font, "white")
+        printer(f"HP: {opponent_hp}", (490, 345), small_font, "white")
         printer(f"DMG: {monster_dmg}", (490, 370), small_font, "white")
-    screen.blit(surf, rect)
 
 
 def attack(who, action):
+    global player_hp, mirror, magic_shield, freezing
+    focus = "indicator"
     if maze[player_position[0]][player_position[1]] == "boss fight":
         opponent_surface = boss_surfs[maze_level - 1]
     else:
@@ -553,13 +602,14 @@ def attack(who, action):
     if who == "player":
         for i in range(40):
             fight_stage()
-            draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2 - 20 + abs(20-i)), wears[0][2], wears[1][2], wears[2][2], 2)
+            draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2 - 20 + abs(20 - i)), wears[0][2], wears[1][2], wears[2][2],
+                        2)
             screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
             info_panel()
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 + 32, HEIGHT / 2 - 64))
-        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), normal_font, "white")
         info_panel()
         pygame.display.update()
         if action == "block":
@@ -569,12 +619,12 @@ def attack(who, action):
         for i in range(40):
             fight_stage()
             draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
-            screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2 - 20 + abs(20-i)))
+            screen.blit(opponent_surface, (WIDTH / 2 - i * 2 + 32, HEIGHT / 2 - 20 + abs(20 - i)))
             info_panel()
             clock.tick(180)
             pygame.display.update()
         screen.blit(surf, (WIDTH / 2 - 96, HEIGHT / 2 - 64))
-        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), small_font, "white")
+        printer(text, (WIDTH / 2 - 25, HEIGHT / 2 + 90), normal_font, "white")
         info_panel()
         clock.tick(60)
         pygame.display.update()
@@ -599,30 +649,36 @@ def attack(who, action):
             pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - 1, HEIGHT / 2 + 66, (value / 304) * 160, 24))
             pygame.draw.rect(screen, rgb, (WIDTH / 2 - (value / 304) * 160, HEIGHT / 2 + 66, (value / 304) * 160, 24))
-            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 92), small_font, "white")
-            pygame.draw.rect(screen, rgb, (WIDTH / 2 - 160, HEIGHT / 2 + 66, 320, 24), 2)
-            steal = (1.5 ** maze_level * 4)
+            printer(text, (WIDTH / 2 - 45, HEIGHT / 2 + 96), normal_font, "white")
+            if focus == "indicator":
+                pygame.draw.rect(screen, rgb, (WIDTH / 2 - 160, HEIGHT / 2 + 66, 320, 24), 2)
+            steal = (1.5 ** maze_level * 10)
             if who == "monster":
-                spells = ((f"HEAL - restore {int(player_max_hp / 4)} health", spell_healing_surf),
-                          ("MIRROR - reflects damage back", spell_mirror_surf),
-                          (f"MAGIC SHIELD - absorbs {int(player_max_hp / 2)} damage", spell_magic_shield_surf),
-                          ("FREEZING - stops enemy attack", spell_freezing_surf),
-                          ("FAMULUS - summons a helper", spell_famulus_surf),
-                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} from enemy", spell_pickpocket_surf))
+                spells = ((f"HEALING - restore {int(player_max_hp / 4)} health", spell_healing_surf, "HEALING"),
+                          ("MIRROR - reflects damage back", spell_mirror_surf, "MIRROR"),
+                          (f"MAGIC SHIELD - absorbs {int(player_max_hp / 2)} damage", spell_magic_shield_surf,
+                           "MAGIC SHIELD"),
+                          ("FREEZING - stops enemy attack", spell_freezing_surf, "FREEZING"),
+                          ("FAMULUS - summons a helper", spell_famulus_surf, "FAMULUS"),
+                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} gold from enemy",
+                           spell_pickpocket_surf, "THIEF"))
             elif who == "player":
-                spells = ((f"BLEEDING - {int(player_dmg / 4)} damage during 3 turns", spell_bleeding_surf),
-                          ("POWER - gives double damage", spell_double_damage_surf),
-                          ("DEATH - instant kill if enemy under 10% HP", spell_death_surf),
-                          ("HASTE - player able to attack twice", spell_haste_surf),
-                          ("FAMULUS - summons a helper", spell_famulus_surf),
-                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} from enemy", spell_pickpocket_surf))
+                spells = ((f"BLEEDING - {int(player_dmg / 4)} damage during 3 turns", spell_bleeding_surf, "BLEEDING"),
+                          ("POWER - gives double damage", spell_double_damage_surf, "POWER"),
+                          ("DEATH - instant kill if enemy under 10% HP", spell_death_surf, "DEATH"),
+                          ("HASTE - player able to attack twice", spell_haste_surf, "HASTE"),
+                          ("FAMULUS - summons a helper", spell_famulus_surf, "FAMULUS"),
+                          (f"THIEF - stealing {int(steal * 0.8)}-{int(steal * 1.2)} gold from enemy",
+                           spell_pickpocket_surf, "THIEF"))
             for number, spell in enumerate(spells):
                 double_surf = pygame.transform.scale(spell[1], (32, 32))
-                if number == selected:
-                    pygame.draw.rect(screen, "lightblue", (144 + number * 57, 397, 36, 36), 2)
-                    printer(spell[0], (WIDTH/2, 447), normal_font, "white", "center")
-                pygame.draw.rect(screen, "grey20", (146 + number * 57, 400, 32, 32))
-                screen.blit(double_surf, (146 + number * 57, 400))
+                if number == selected and focus == "spells":
+                    pygame.draw.rect(screen, rgb, (144 + number * 54, 397, 48, 48), 2)
+                    printer(spell[0], (WIDTH / 2, 464), normal_font, "white", "center")
+                pygame.draw.rect(screen, "grey20", (146 + number * 54, 400, 44, 44))
+                screen.blit(double_surf, (144 + number * 54, 400))
+                printer(str(spells_inventory.get(spells[number][2])), (187 + number * 54, 450), small_font, "white",
+                        "bottomright")
             clock.tick(60)
             pygame.display.update()
 
@@ -632,13 +688,51 @@ def attack(who, action):
                 if fight_event.type == pygame.KEYDOWN:
                     if fight_event.key == pygame.K_SPACE:
                         if action == "hit":
-                            return value / 304  # factor (between 0 - 1)
-                    if fight_event.key == pygame.K_RIGHT:
+                            if focus == "indicator":
+                                return value / 304  # factor (between 0 - 1)
+                            if focus == "spells" and who == "monster":
+                                if selected == 0 and spells_inventory.get("HEALING"):
+                                    pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 - 100, 400, 30))
+                                    if 0 < player_max_hp - player_hp < int(player_max_hp / 4):
+                                        printer(f"+{str(player_max_hp - player_hp)}", (WIDTH / 2 - 78, HEIGHT / 2 - 70),
+                                                normal_font, "green")
+                                        player_hp = player_max_hp
+                                    elif player_hp == player_max_hp:
+                                        continue
+                                    else:
+                                        player_hp += int(player_max_hp / 4)
+                                        printer(f"+{str(int(player_max_hp / 4))}", (WIDTH / 2 - 78, HEIGHT / 2 - 70),
+                                                normal_font, "green")
+                                    spells_inventory["HEALING"] -= 1
+                                    info_panel()
+                                    fight_attributes()
+                                elif selected == 1 and spells_inventory.get("MIRROR") and not mirror:
+                                    pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 - 100, 400, 30))
+                                    screen.blit(pygame.transform.scale(spell_mirror_surf, (32, 32)),
+                                                (WIDTH / 2 - 80, HEIGHT / 2 - 100))
+                                    spells_inventory["MIRROR"] -= 1
+                                    mirror = True
+                                elif selected == 2 and spells_inventory.get("MAGIC SHIELD"):
+                                    magic_shield += int(player_max_hp / 2)
+                                    spells_inventory["MAGIC SHIELD"] -= 1
+                                    draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
+                                    fight_attributes()
+                                    pygame.display.update()
+                                elif selected == 3 and spells_inventory.get("FREEZING"):
+                                    spells_inventory["FREEZING"] -= 1
+                                    freezing = True
+                                    return 1
+
+                    if fight_event.key == pygame.K_RIGHT and focus == "spells":
                         if selected < 5:
                             selected += 1
-                    if fight_event.key == pygame.K_LEFT:
+                    if fight_event.key == pygame.K_LEFT and focus == "spells":
                         if selected > 0:
                             selected -= 1
+                    if fight_event.key == pygame.K_UP:
+                        focus = "indicator"
+                    if fight_event.key == pygame.K_DOWN:
+                        focus = "spells"
 
 
 def well():
@@ -659,7 +753,7 @@ def well():
                 font, col = normal_font, "green"
             else:
                 font, col = small_font, "white"
-            printer(text, (WIDTH / 2, tile_size * (3 + count) - 13), font, col, "center")
+            printer(text, (WIDTH / 2, tile_size * (3 + count) - 17), font, col, "center")
         for chest_event in pygame.event.get():
             if chest_event.type == pygame.QUIT:
                 pygame.quit()
@@ -691,7 +785,8 @@ def transition():
     for i in range(256):
         pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
         for number, sentence in enumerate(text):
-            printer(sentence, (WIDTH / 2 + 2, HEIGHT / 2 + 55 * number + 2), giant_font, (i / 2, i / 2, i / 2), "center")
+            printer(sentence, (WIDTH / 2 + 2, HEIGHT / 2 + 55 * number + 2), giant_font, (i / 2, i / 2, i / 2),
+                    "center")
             printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), giant_font, (i, 0, 0), "center")
         pygame.display.update()
         clock.tick(40)
@@ -747,14 +842,14 @@ maze = maze_generator()
 quest = choice(quests)
 quest_item_quantity = int(randrange(4, 7) + maze_level)
 shop_list = new_shop_list()
-monster_atk = int(gears[maze_level + 10][1][3] * 0.85)  # 85% of player DEF (when not bought new gear yet in the shop)
-monster_def = int(gears[maze_level - 1][1][1] * 0.85)  # 85% of player ATK
-monster_dmg = int(gears[maze_level + 21][1][4] * 0.35)  # 35% of player HP
-monster_hp = int(gears[maze_level - 1][1][2] * 0.85)  # 85% of player DMG (one good hit can kill)
-boss_atk = gears[maze_level + 11][1][3]  # equal with player DEF (when already bought new gear in the shop)
-boss_def = gears[maze_level][1][1]  # equal with player ATK
-boss_dmg = int(gears[maze_level + 22][1][4] * 0.45)  # 45 of player HP
-boss_max_hp = int(gears[maze_level][1][2] * 2.2)  # 220% of player DMG (min 3 good hit to defeat boss)
+monster_atk = int(gears[maze_level + 10][1][3] * 1.3)  # 130% of player DEF (when not bought new gear yet in the shop)
+monster_def = int(gears[maze_level - 1][1][1] * 0.7)  # 70% of player ATK
+monster_dmg = int(gears[maze_level + 21][1][4] * 0.6)  # 60% of player HP
+monster_hp = int(gears[maze_level - 1][1][2] * 1.5)  # 150% of player DMG (minimum 2 hit can kill)
+boss_atk = int(gears[maze_level + 11][1][3] * 0.7)  # 70% of player DEF (when already bought new gear in the shop)
+boss_def = int(gears[maze_level][1][1] * 1.3)  # 130% of player ATK
+boss_dmg = int(gears[maze_level + 22][1][4] * 0.8)  # 80 of player HP
+boss_max_hp = int(gears[maze_level][1][2] * 2.8)  # 280% of player DMG (minimum 3 hit to defeat boss)
 boss_hp = boss_max_hp
 pygame.mixer.music.load("sounds/bg_sound.wav")
 pygame.mixer.music.play(-1)

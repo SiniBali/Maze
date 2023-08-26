@@ -20,9 +20,13 @@ player_dmg = 0
 player_def = 0
 player_max_hp = 0
 outside = True
-darkness = False
+darkness = True
 boss_defeated = False
 quest_state = "not in progress"
+mirror = False
+magic_shield = 0
+freezing = False
+
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
@@ -49,6 +53,7 @@ block_surf = pygame.image.load("pictures/block.png")
 fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
 gate_surf = pygame.image.load("pictures/gate.png")
 finish_surf = pygame.image.load("pictures/finish.png")
+magic_shield_surf = pygame.image.load("pictures/magic_shield.png")
 
 monster1_surf = pygame.image.load("pictures/monster1.png")
 monster2_surf = pygame.image.load("pictures/monster2.png")
@@ -161,6 +166,8 @@ spell_famulus_surf = pygame.image.load("pictures/spell_famulus.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
 spell_haste_surf = pygame.image.load("pictures/spell_haste.png")
+spells_inventory = {"BLEEDING": 3, "HEALING": 3, "MIRROR": 3, "MAGIC SHIELD": 3, "FREEZING": 3,
+                    "POWER": 3, "FAMULUS": 3, "DEATH": 30, "THIEF": 3, "HASTE": 3}
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -198,11 +205,13 @@ win_sound = pygame.mixer.Sound("sounds/fanfare.wav")
 lose_sound = pygame.mixer.Sound("sounds/lose.wav")
 transit_sound = pygame.mixer.Sound("sounds/transit.wav")
 wake_up_sound = pygame.mixer.Sound("sounds/wake-up.wav")
+freeze_spell_sound = pygame.mixer.Sound("sounds/freeze_spell.wav")
 
-small_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 22)
-normal_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 25)
-big_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 32)
-giant_font = pygame.font.Font("fonts/FenwickWoodtype.ttf", 40)
+font = "fonts/Kingthings Petrock.ttf"
+small_font = pygame.font.Font(font, 17)
+normal_font = pygame.font.Font(font, 22)
+big_font = pygame.font.Font(font, 27)
+giant_font = pygame.font.Font(font, 36)
 
 monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
                  monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)
