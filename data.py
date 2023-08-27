@@ -27,7 +27,6 @@ mirror = False
 magic_shield = 0
 freezing = False
 
-
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
 entrance_surf = pygame.image.load("pictures/entrance.png")
@@ -161,7 +160,7 @@ spell_healing_surf = pygame.image.load("pictures/spell_healing.png")
 spell_mirror_surf = pygame.image.load("pictures/spell_mirror.png")
 spell_magic_shield_surf = pygame.image.load("pictures/spell_magic_shield.png")
 spell_freezing_surf = pygame.image.load("pictures/spell_freezing.png")
-spell_double_damage_surf = pygame.image.load("pictures/spell_double_damage.png")
+spell_power_surf = pygame.image.load("pictures/spell_double_damage.png")
 spell_famulus_surf = pygame.image.load("pictures/spell_famulus.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
@@ -207,6 +206,11 @@ transit_sound = pygame.mixer.Sound("sounds/transit.wav")
 wake_up_sound = pygame.mixer.Sound("sounds/wake-up.wav")
 freeze_spell_sound = pygame.mixer.Sound("sounds/freeze_spell.wav")
 well_sound = pygame.mixer.Sound("sounds/well.wav")
+bleeding_sound = pygame.mixer.Sound("sounds/bleeding.wav")
+mirror_sound = pygame.mixer.Sound("sounds/mirror.wav")
+magic_shield_sound = pygame.mixer.Sound("sounds/magic_shield.wav")
+power_sound = pygame.mixer.Sound("sounds/power.wav")
+death_sound = pygame.mixer.Sound("sounds/death.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 17)
