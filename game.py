@@ -122,12 +122,7 @@ def update_map():
                 player_hp = player_max_hp
             maze[x][y] = "room"
     elif maze[x][y] == "well":
-        found_animation(well_surf, chest_sound)
-        maze[x][y] = "room"
-        update_map()
-        draw_player((player_position[0] * tile_size, player_position[1] * tile_size + info_panel_height),
-                    wears[0][2], wears[1][2], wears[2][2], 1)
-        well()
+        found_animation(well_surf, well_sound)
     elif maze[x][y] == "shop":
         found_animation(shop_surf, shop_sound)
     elif maze[x][y] == "rat":
@@ -197,12 +192,21 @@ def info_panel():
     pygame.draw.rect(screen, "black", (0, 0, WIDTH, info_panel_height), 3)
     if maze[player_position[0]][player_position[1]] == "boss":
         printer("Press SPACE to fight with boss", (WIDTH / 2, tile_size / 2), normal_font, "white", "center")
+    if maze[player_position[0]][player_position[1]] == "well" and outside:
+        printer("Wishing Well/ Press SPACE to wish something", (WIDTH / 2, tile_size / 2),
+                normal_font, "white", "center")
     elif maze[player_position[0]][player_position[1]] == "shop" and outside:
         printer("Press SPACE to enter shop", (WIDTH / 2, tile_size / 2), normal_font, "white", "center")
     else:
-        printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    HP: {player_hp} / {player_max_hp}    "
-                f"ATK: {player_atk}    DEF: {player_def}    DMG: {player_dmg}",
-                (WIDTH / 2, tile_size / 2), normal_font, "black", "center")
+        if magic_shield:
+            printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    "
+                    f"HP: {player_hp} / {player_max_hp} (+{magic_shield})   "
+                    f"ATK: {player_atk}    DEF: {player_def}    DMG: {player_dmg}",
+                    (WIDTH / 2, tile_size / 2), normal_font, "black", "center")
+        else:
+            printer(f"Maze LVL: {maze_level}    Gold: {player_gold}    HP: {player_hp} / {player_max_hp}    "
+                    f"ATK: {player_atk}    DEF: {player_def}    DMG: {player_dmg}",
+                    (WIDTH / 2, tile_size / 2), normal_font, "black", "center")
     if quest_state in ("accepted", "done"):
         pygame.draw.rect(screen, "grey30", (8 * tile_size, dimension * tile_size, 96, info_panel_height))
         pygame.draw.rect(screen, "black", (8 * tile_size, dimension * tile_size, 96, info_panel_height), 3)
@@ -717,6 +721,7 @@ def attack(who, action):
                                     spells_inventory["MAGIC SHIELD"] -= 1
                                     draw_player((WIDTH / 2 - 96, HEIGHT / 2), wears[0][2], wears[1][2], wears[2][2], 2)
                                     fight_attributes()
+                                    info_panel()
                                     pygame.display.update()
                                 elif selected == 3 and spells_inventory.get("FREEZING"):
                                     spells_inventory["FREEZING"] -= 1
@@ -736,19 +741,20 @@ def attack(who, action):
 
 
 def well():
-    global darkness, player_hp, player_gold
-    chest_text = (f"A map, in cost of {int(player_hp * 0.9)}HP. If you lost a fight, the map will disappear.",
+    global darkness, player_hp, player_gold, magic_shield, maze, outside
+    outside = False
+    well_text = (f"End of darkness. But you lost {int(player_hp * 0.9)} HP. If you lose a fight, darkness comes back.",
                   f"Heal for full HP (+{player_max_hp - player_hp}HP).",
-                  f"A purse with {int(2.2 ** maze_level) * 15} gold.")
-    done = False
+                  f"A purse with {int(2.2 ** maze_level) * 15} gold.",
+                 "Not now (exit)")
     selected = 0
-    while not done:
+    while True:
         info_panel()
-        pygame.draw.rect(screen, "grey30", (0, tile_size, WIDTH, 4 * tile_size))
-        pygame.draw.rect(screen, "black", (0, tile_size, WIDTH, 4 * tile_size), 3)
+        pygame.draw.rect(screen, "grey30", (0, tile_size, WIDTH, 5 * tile_size))
+        pygame.draw.rect(screen, "black", (0, tile_size, WIDTH, 5 * tile_size), 3)
         printer("I am a Wishing Well. Tell me what you desire:", (WIDTH / 2, tile_size * 2 - 13),
                 big_font, "black", "center")
-        for count, text in enumerate(chest_text):
+        for count, text in enumerate(well_text):
             if count == selected:
                 font, col = normal_font, "green"
             else:
@@ -759,23 +765,29 @@ def well():
                 pygame.quit()
             if chest_event.type == pygame.KEYDOWN:
                 if chest_event.key == pygame.K_DOWN:
-                    if selected < 2:
+                    if selected < 3:
                         selected += 1
                 if chest_event.key == pygame.K_UP:
                     if selected > 0:
                         selected -= 1
                 if chest_event.key == pygame.K_SPACE:
+                    outside = True
                     if selected == 0:
                         win_sound.play()
                         darkness = False
-                        player_hp -= int(player_hp * 0.9)
+                        player_hp = -int(player_hp * 0.9)
+                        magic_shield = False
+                        return True
                     elif selected == 1:
                         player_hp = player_max_hp
                         health_sound.play()
-                    else:
+                        return True
+                    elif selected == 2:
                         player_gold += int(2.1 ** maze_level) * 30
                         coin_sound.play()
-                    done = True
+                        return True
+                    return False
+
         pygame.display.update()
 
 
@@ -922,6 +934,9 @@ while True:
                 choice((step0_sound, step1_sound)).play()
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "shop":
                 shopping()
+            elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "well":
+                if well():
+                    maze[player_position[0]][player_position[1]] = "room"
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "boss":
                 maze[player_position[0]][player_position[1]] = "boss fight"
                 result = monster_fight()

@@ -206,6 +206,7 @@ lose_sound = pygame.mixer.Sound("sounds/lose.wav")
 transit_sound = pygame.mixer.Sound("sounds/transit.wav")
 wake_up_sound = pygame.mixer.Sound("sounds/wake-up.wav")
 freeze_spell_sound = pygame.mixer.Sound("sounds/freeze_spell.wav")
+well_sound = pygame.mixer.Sound("sounds/well.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 17)
