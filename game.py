@@ -434,7 +434,7 @@ def quest_item_placing(maze, number, item):
 
 def monster_fight():
     global player_hp, boss_hp, player_gold, opponent_hp, mirror, magic_shield, freezing, bleeding, opponent_hp,\
-        opponent_max_hp
+        opponent_max_hp, haste
     bleeding = 0
     if maze[player_position[0]][player_position[1]] == "boss fight":
         opponent_surface = boss_surfs[maze_level - 1]
@@ -487,8 +487,26 @@ def monster_fight():
                                 player_gold += earn
                                 coin_sound.play()
                                 return "win"
-                            else:
-                                state = "defense"
+                            if haste:
+                                haste = False
+                                damage = int(player_dmg * attack("player", "hit"))
+                                printer(str(-damage), (WIDTH / 2 + 45, HEIGHT / 2 - 70), normal_font, "red")
+                                pygame.display.update()
+                                monster_ah_sound.play()
+                                pygame.time.wait(1000)
+                                opponent_hp -= damage
+                                if opponent_hp <= 0:
+                                    earn = randrange(int(1.8 ** maze_level * 6 * 0.7), int(1.8 ** maze_level * 6 * 1.3))
+                                    pygame.draw.rect(screen, "black", (WIDTH / 2 - 200, HEIGHT / 2 + 64, 400, 200))
+                                    printer(f"You win, and found {earn} gold",
+                                            (WIDTH / 2, HEIGHT / 2 + 80), normal_font, "white", "center")
+                                    win_sound.play()
+                                    pygame.display.update()
+                                    pygame.time.wait(2000)
+                                    player_gold += earn
+                                    coin_sound.play()
+                                    return "win"
+                            state = "defense"
                         else:
                             attack("player", "block")
                             state = "defense"
@@ -629,7 +647,7 @@ def fight_attributes():
 
 
 def attack(who, action):
-    global player_hp, mirror, magic_shield, freezing, bleeding, opponent_hp, opponent_max_hp
+    global player_hp, mirror, magic_shield, freezing, bleeding, opponent_hp, opponent_max_hp, haste
     power = 1
     if maze[player_position[0]][player_position[1]] == "boss fight":
         opponent_surface = boss_surfs[maze_level - 1]
@@ -789,9 +807,11 @@ def attack(who, action):
                         elif selected == 2 and spells_inventory.get("DEATH")\
                                 and int(100 * opponent_hp / opponent_max_hp) <= 30:
                             death_sound.play()
+                            spells_inventory["DEATH"] -= 1
                             return opponent_hp / player_dmg
                         elif selected == 3 and spells_inventory.get("HASTE"):
-                            pass
+                            spells_inventory["HASTE"] -= 1
+                            haste = True
                     else:
                         if selected == 4 and spells_inventory.get("FAMULUS"):
                             pass

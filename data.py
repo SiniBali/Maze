@@ -26,6 +26,7 @@ quest_state = "not in progress"
 mirror = False
 magic_shield = 0
 freezing = False
+haste = False
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
