@@ -26,7 +26,8 @@ quest_state = "not in progress"
 mirror = False
 magic_shield = 0
 freezing = False
-haste = False
+speed = False
+focus = "indicator"
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
@@ -165,9 +166,9 @@ spell_power_surf = pygame.image.load("pictures/spell_double_damage.png")
 spell_famulus_surf = pygame.image.load("pictures/spell_famulus.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
-spell_haste_surf = pygame.image.load("pictures/spell_haste.png")
+spell_speed_surf = pygame.image.load("pictures/spell_haste.png")
 spells_inventory = {"BLEEDING": 3, "HEALING": 3, "MIRROR": 3, "MAGIC SHIELD": 3, "FREEZING": 3,
-                    "POWER": 3, "FAMULUS": 3, "DEATH": 30, "THIEF": 3, "HASTE": 3}
+                    "POWER": 3, "FAMULUS": 3, "DEATH": 30, "THIEF": 3, "SPEED": 3}
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -212,6 +213,7 @@ mirror_sound = pygame.mixer.Sound("sounds/mirror.wav")
 magic_shield_sound = pygame.mixer.Sound("sounds/magic_shield.wav")
 power_sound = pygame.mixer.Sound("sounds/power.wav")
 death_sound = pygame.mixer.Sound("sounds/death.wav")
+speed_sound = pygame.mixer.Sound("sounds/speed.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 17)
