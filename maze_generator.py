@@ -77,5 +77,6 @@ def maze_generator():
     item_placement(matrix, well_amount, "well")
     item_placement(matrix, shop_amount, "shop")
     item_placement(matrix, boss_amount, "boss")
+    item_placement(matrix, source_amount, "source")
 
     return matrix

@@ -12,6 +12,7 @@ boss_amount = 1
 coin_amount = 7
 potion_amount = 7
 well_amount = 1
+source_amount = 3
 shop_amount = 1
 maze_level = 1
 player_gold = 0
@@ -20,7 +21,7 @@ player_dmg = 0
 player_def = 0
 player_max_hp = 0
 outside = True
-darkness = True
+darkness = False
 boss_defeated = False
 quest_state = "not in progress"
 mirror = False
@@ -28,17 +29,20 @@ magic_shield = 0
 freezing = False
 speed = False
 focus = "indicator"
+ghost = False
+frame = 0
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
 entrance_surf = pygame.image.load("pictures/entrance.png")
 exit_surf = pygame.image.load("pictures/exit.png")
 grid_surf = pygame.image.load("pictures/grid.png")
-player_surf = pygame.image.load("pictures/player.png")
+player_surf = (pygame.image.load("pictures/player_0.png"), pygame.image.load("pictures/player_1.png"))
 coin_surf = pygame.image.load("pictures/coin.png")
 health_surf = pygame.image.load("pictures/health.png")
-well_surf = pygame.image.load("pictures/well.png")
+well_surf = (pygame.image.load("pictures/well_0.png"), pygame.image.load("pictures/well_1.png"))
 shop_surf = pygame.image.load("pictures/shop.png")
+source_surf = (pygame.image.load("pictures/source_0.png"), pygame.image.load("pictures/source_1.png"))
 black_surf = pygame.image.load("pictures/black.png")
 mask_surf = pygame.image.load("pictures/mask.png")
 maze_surf = pygame.image.load("pictures/maze.png")
@@ -55,8 +59,9 @@ fight_stage_surf = pygame.image.load("pictures/fight_stage.png")
 gate_surf = pygame.image.load("pictures/gate.png")
 finish_surf = pygame.image.load("pictures/finish.png")
 magic_shield_surf = pygame.image.load("pictures/magic_shield.png")
+shop_exit_surf = pygame.image.load("pictures/shop_exit.png")
 
-monster1_surf = pygame.image.load("pictures/monster1.png")
+monster1_surf = (pygame.image.load("pictures/monster1_0.png"), pygame.image.load("pictures/monster1_1.png"))
 monster2_surf = pygame.image.load("pictures/monster2.png")
 monster3_surf = pygame.image.load("pictures/monster3.png")
 monster4_surf = pygame.image.load("pictures/monster4.png")
@@ -67,7 +72,7 @@ monster8_surf = pygame.image.load("pictures/monster8.png")
 monster9_surf = pygame.image.load("pictures/monster9.png")
 monster10_surf = pygame.image.load("pictures/monster10.png")
 
-boss1_surf = pygame.image.load("pictures/boss1.png")
+boss1_surf = (pygame.image.load("pictures/boss1_0.png"), pygame.image.load("pictures/boss1_1.png"))
 boss2_surf = pygame.image.load("pictures/boss2.png")
 boss3_surf = pygame.image.load("pictures/boss3.png")
 boss4_surf = pygame.image.load("pictures/boss4.png")
@@ -102,8 +107,8 @@ rune_engraved_surf = pygame.image.load("pictures/rune_engraved.png")
 holy_aegis_surf = pygame.image.load("pictures/holy_aegis.png")
 crystal_tower_surf = pygame.image.load("pictures/crystal_tower.png")
 
-rag_suit_surf = pygame.image.load("pictures/rag_suit.png")
-linen_cloth_surf = pygame.image.load("pictures/linen_cloth.png")
+rag_suit_surf = (pygame.image.load("pictures/rag_suit_0.png"), pygame.image.load("pictures/rag_suit_1.png"))
+linen_cloth_surf = (pygame.image.load("pictures/linen_cloth_0.png"), pygame.image.load("pictures/linen_cloth_1.png"))
 chain_shirt_surf = pygame.image.load("pictures/chain_shirt.png")
 steel_protector_surf = pygame.image.load("pictures/steel_protector.png")
 shadow_cloak_surf = pygame.image.load("pictures/shadow_cloak.png")
@@ -116,40 +121,40 @@ rune_armor_surf = pygame.image.load("pictures/rune_armor.png")
 
 # item parameters: price, ATK, DMG, DEF, HP, surf
 gears = (("Rusty Dagger", (0, 12, 75, 0, 0), rusty_dagger_surf),
-         ("Oak Staff", (5, 18, 90, 0, 0), oak_staff_surf),
-         ("Iron Mace", (15, 30, 120, 0, 0), iron_mace_surf),
-         ("Steel Sword", (40, 45, 180, 0, 0), steel_sword_surf),
-         ("Shadow Blade", (120, 69, 360, 0, 0), shadow_blade_surf),
-         ("Flame Axe", (300, 90, 450, 0, 0), flame_axe_surf),
-         ("Venom Dagger", (680, 120, 675, 0, 0), venom_dagger_surf),
-         ("Lightning Spear", (1760, 195, 840, 0, 0), lightning_spear_surf),
-         ("Rune Staff", (3100, 225, 1135, 0, 0), rune_staff_surf),
-         ("Holy Hammer", (8500, 300, 1800, 0, 0), holy_hammer_surf),
-         ("Dragon Lance", (15000, 450, 2400, 0, 0), dragon_lance_surf),
+         ("Oak Staff", (15, 18, 90, 0, 0), oak_staff_surf),
+         ("Iron Mace", (45, 30, 120, 0, 0), iron_mace_surf),
+         ("Steel Sword", (120, 45, 180, 0, 0), steel_sword_surf),
+         ("Shadow Blade", (360, 69, 360, 0, 0), shadow_blade_surf),
+         ("Flame Axe", (900, 90, 450, 0, 0), flame_axe_surf),
+         ("Venom Dagger", (2040, 120, 675, 0, 0), venom_dagger_surf),
+         ("Lightning Spear", (5280, 195, 840, 0, 0), lightning_spear_surf),
+         ("Rune Staff", (9300, 225, 1135, 0, 0), rune_staff_surf),
+         ("Holy Hammer", (25500, 300, 1800, 0, 0), holy_hammer_surf),
+         ("Dragon Lance", (45000, 450, 2400, 0, 0), dragon_lance_surf),
 
          ("Rusty plate", (0, 0, 0, 15, 0), rusty_plate_surf),
-         ("Wooden Buckler", (3, 0, 0, 21, 0), wooden_buckler_surf),
-         ("Iron Shield", (12, 0, 0, 36, 0), iron_shield_surf),
-         ("Steel Shield", (60, 0, 0, 54, 0), steel_shield_surf),
-         ("Light Barrier", (420, 0, 0, 75, 0), light_barrier_surf),
-         ("Flame Aegis", (1100, 0, 0, 96, 0), flame_aegis_surf),
-         ("Turtle Shield", (2900, 0, 0, 126, 0), turtle_shield_surf),
-         ("Golden Barrier", (4100, 0, 0, 174, 0), golden_barrier_surf),
-         ("Rune Engraved", (8300, 0, 0, 240, 0), rune_engraved_surf),
-         ("Holy Aegis", (12000, 0, 0, 330, 0), holy_aegis_surf),
-         ("Crystal Tower", (18000, 0, 0, 495, 0), crystal_tower_surf),
+         ("Wooden Buckler", (9, 0, 0, 21, 0), wooden_buckler_surf),
+         ("Iron Shield", (36, 0, 0, 36, 0), iron_shield_surf),
+         ("Steel Shield", (120, 0, 0, 54, 0), steel_shield_surf),
+         ("Light Barrier", (1260, 0, 0, 75, 0), light_barrier_surf),
+         ("Flame Aegis", (3300, 0, 0, 96, 0), flame_aegis_surf),
+         ("Turtle Shield", (8700, 0, 0, 126, 0), turtle_shield_surf),
+         ("Golden Barrier", (12300, 0, 0, 174, 0), golden_barrier_surf),
+         ("Rune Engraved", (24900, 0, 0, 240, 0), rune_engraved_surf),
+         ("Holy Aegis", (36000, 0, 0, 330, 0), holy_aegis_surf),
+         ("Crystal Tower", (54000, 0, 0, 495, 0), crystal_tower_surf),
 
          ("Rag suit", (0, 0, 0, 0, 60), rag_suit_surf),
-         ("Linen Cloth", (4, 0, 0, 0, 80), linen_cloth_surf),
-         ("Chain Shirt", (10, 0, 0, 0, 120), chain_shirt_surf),
-         ("Steel Protector", (50, 0, 0, 0, 190), steel_protector_surf),
-         ("Shadow Cloak", (380, 0, 0, 0, 275), shadow_cloak_surf),
-         ("Flame Safeguard", (990, 0, 0, 0, 410), flame_safeguard_surf),
-         ("Venom Chainmail", (2540, 0, 0, 0, 575), venom_chainmail_surf),
-         ("Golden Mail", (3520, 0, 0, 0, 825), golden_mail_surf),
-         ("Rune Armor", (6500, 0, 0, 0, 1100), rune_armor_surf),
-         ("Holy Armor", (9000, 0, 0, 0, 1600), holy_armor_surf),
-         ("Crystal Plate", (14500, 0, 0, 0, 2500), crystal_plate_surf))
+         ("Linen Cloth", (12, 0, 0, 0, 80), linen_cloth_surf),
+         ("Chain Shirt", (30, 0, 0, 0, 120), chain_shirt_surf),
+         ("Steel Protector", (150, 0, 0, 0, 190), steel_protector_surf),
+         ("Shadow Cloak", (1140, 0, 0, 0, 275), shadow_cloak_surf),
+         ("Flame Safeguard", (2970, 0, 0, 0, 410), flame_safeguard_surf),
+         ("Venom Chainmail", (7620, 0, 0, 0, 575), venom_chainmail_surf),
+         ("Golden Mail", (13560, 0, 0, 0, 825), golden_mail_surf),
+         ("Rune Armor", (19500, 0, 0, 0, 1100), rune_armor_surf),
+         ("Holy Armor", (27000, 0, 0, 0, 1600), holy_armor_surf),
+         ("Crystal Plate", (43500, 0, 0, 0, 2500), crystal_plate_surf))
 
 wears = [gears[0],
          gears[11],
@@ -163,12 +168,12 @@ spell_mirror_surf = pygame.image.load("pictures/spell_mirror.png")
 spell_magic_shield_surf = pygame.image.load("pictures/spell_magic_shield.png")
 spell_freezing_surf = pygame.image.load("pictures/spell_freezing.png")
 spell_power_surf = pygame.image.load("pictures/spell_double_damage.png")
-spell_famulus_surf = pygame.image.load("pictures/spell_famulus.png")
+spell_ghost_surf = pygame.image.load("pictures/spell_ghost.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
 spell_speed_surf = pygame.image.load("pictures/spell_haste.png")
-spells_inventory = {"BLEEDING": 3, "HEALING": 3, "MIRROR": 3, "MAGIC SHIELD": 3, "FREEZING": 3,
-                    "POWER": 3, "FAMULUS": 3, "DEATH": 30, "THIEF": 3, "SPEED": 3}
+spells_inventory = {"BLEEDING": 10, "HEALING": 10, "MIRROR": 10, "MAGIC SHIELD": 10, "FREEZING": 10,
+                    "POWER": 10, "GHOST": 10, "DEATH": 10, "THIEF": 10, "SPEED": 10}
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -214,6 +219,9 @@ magic_shield_sound = pygame.mixer.Sound("sounds/magic_shield.wav")
 power_sound = pygame.mixer.Sound("sounds/power.wav")
 death_sound = pygame.mixer.Sound("sounds/death.wav")
 speed_sound = pygame.mixer.Sound("sounds/speed.wav")
+tick_sound = pygame.mixer.Sound("sounds/tick.wav")
+source_sound = pygame.mixer.Sound("sounds/source.wav")
+quest_succes_sound = pygame.mixer.Sound("sounds/quest_succes.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 17)
