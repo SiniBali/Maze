@@ -37,8 +37,8 @@ def draw_map():
             k = dimension - 1 - player_position[1]
         else:
             k = 4
-        r1, r2, r3, r4 = h + player_position[0], i + player_position[0] + 1, \
-                         j + player_position[1], k + player_position[1] + 1
+        r1, r2, r3, r4 = h + player_position[0], i + player_position[0] + 1,\
+            j + player_position[1], k + player_position[1] + 1
     for x in range(r1, r2):
         for y in range(r3, r4):
             if (x + y) % 2:
@@ -167,8 +167,7 @@ def update_map():
         maze[x][y] = "room"
     if not quest_item_quantity and quest_state == "accepted":
         quest_state = "done"
-        quest_succes_sound.play()
-
+        quest_success_sound.play()
 
 
 def draw_player(position, r_hand, l_hand, body_surf, size, phase=0, ghost=False):
@@ -706,7 +705,7 @@ def fight_attributes():
 
 
 def attack(who, action):
-    global player_hp, mirror, magic_shield, freezing, bleeding, opponent_hp, opponent_max_hp, speed, focus,\
+    global player_hp, mirror, magic_shield, freezing, bleeding, opponent_hp, opponent_max_hp, speed, focus, \
         player_gold, ghost, ghost_hp, ghost_max_hp
     power = 1
     spell_casted = False
@@ -731,9 +730,9 @@ def attack(who, action):
             draw_player((WIDTH / 2 + i * 2 - 96, HEIGHT / 2 - 20 + abs(20 - i)),
                         wears[0][2], wears[1][2], wears[2][2], 2, ghost)
             screen.blit(opponent_surface, (WIDTH / 2 + 32, HEIGHT / 2))
-            for i in range(bleeding):
+            for h in range(bleeding):
                 screen.blit(pygame.transform.scale(spell_bleeding_surf, (32, 32)),
-                            (WIDTH / 2 + 70 + i * 12, HEIGHT / 2 - 3))
+                            (WIDTH / 2 + 70 + h * 12, HEIGHT / 2 - 3))
             info_panel()
             clock.tick(180)
             pygame.display.update()
@@ -1079,9 +1078,9 @@ def gift_of_gods():
             while spell_old == spell:
                 spell, surf = choice(list(spells.items()))
             spell_old = spell
-            pygame.draw.rect(screen, "grey30", (WIDTH/2 - 92 + i * 40, HEIGHT / 2 - 2, 36, 36))
+            pygame.draw.rect(screen, "grey30", (WIDTH / 2 - 92 + i * 40, HEIGHT / 2 - 2, 36, 36))
             tick_sound.play()
-            screen.blit(pygame.transform.scale(surf, (32, 32)), (WIDTH/2 - 90 + i * 40, HEIGHT / 2))
+            screen.blit(pygame.transform.scale(surf, (32, 32)), (WIDTH / 2 - 90 + i * 40, HEIGHT / 2))
             pygame.display.update()
             pygame.time.wait(int(15 * 1.3 ** j))
         spells_inventory[spell] += 1
@@ -1148,7 +1147,7 @@ while True:
                     darkness = True
                     new_level_sound.play()
                     maze_fade_in()
-                    boss_defeated = True #False
+                    boss_defeated = True  # False
                     quest_state = "not in progress"
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(4, 7) + maze_level)
@@ -1187,8 +1186,8 @@ while True:
                 if well():
                     maze[player_position[0]][player_position[1]] = "room"
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "source":
-                    gift_of_gods()
-                    maze[player_position[0]][player_position[1]] = "room"
+                gift_of_gods()
+                maze[player_position[0]][player_position[1]] = "room"
             elif event.key == pygame.K_SPACE and maze[player_position[0]][player_position[1]] == "boss":
                 maze[player_position[0]][player_position[1]] = "boss fight"
                 result = monster_fight()

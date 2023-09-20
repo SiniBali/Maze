@@ -7,7 +7,7 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-monster_amount = 0 #7
+monster_amount = 0  # 7
 boss_amount = 0
 coin_amount = 7
 potion_amount = 7
@@ -22,7 +22,7 @@ player_def = 0
 player_max_hp = 0
 outside = True
 darkness = False
-boss_defeated = True #False
+boss_defeated = True  # False
 quest_state = "not in progress"
 mirror = False
 magic_shield = 0
@@ -110,13 +110,17 @@ crystal_tower_surf = pygame.image.load("pictures/crystal_tower.png")
 rag_suit_surf = (pygame.image.load("pictures/rag_suit_0.png"), pygame.image.load("pictures/rag_suit_1.png"))
 linen_cloth_surf = (pygame.image.load("pictures/linen_cloth_0.png"), pygame.image.load("pictures/linen_cloth_1.png"))
 chain_shirt_surf = (pygame.image.load("pictures/chain_shirt_0.png"), pygame.image.load("pictures/chain_shirt_1.png"))
-steel_protector_surf = (pygame.image.load("pictures/steel_protector_0.png"), pygame.image.load("pictures/steel_protector_1.png"))
+steel_protector_surf = (
+    pygame.image.load("pictures/steel_protector_0.png"), pygame.image.load("pictures/steel_protector_1.png"))
 shadow_cloak_surf = (pygame.image.load("pictures/shadow_cloak_0.png"), pygame.image.load("pictures/shadow_cloak_1.png"))
-venom_chainmail_surf = (pygame.image.load("pictures/venom_chainmail_0.png"), pygame.image.load("pictures/venom_chainmail_1.png"))
-flame_safeguard_surf = (pygame.image.load("pictures/flame_safeguard_0.png"), pygame.image.load("pictures/flame_safeguard_1.png"))
+venom_chainmail_surf = (
+    pygame.image.load("pictures/venom_chainmail_0.png"), pygame.image.load("pictures/venom_chainmail_1.png"))
+flame_safeguard_surf = (
+    pygame.image.load("pictures/flame_safeguard_0.png"), pygame.image.load("pictures/flame_safeguard_1.png"))
 golden_mail_surf = (pygame.image.load("pictures/golden_mail_0.png"), pygame.image.load("pictures/golden_mail_1.png"))
 holy_armor_surf = (pygame.image.load("pictures/holy_armor_0.png"), pygame.image.load("pictures/holy_armor_1.png"))
-crystal_plate_surf = (pygame.image.load("pictures/crystal_plate_0.png"), pygame.image.load("pictures/crystal_plate_1.png"))
+crystal_plate_surf = (
+    pygame.image.load("pictures/crystal_plate_0.png"), pygame.image.load("pictures/crystal_plate_1.png"))
 rune_armor_surf = (pygame.image.load("pictures/rune_armor_0.png"), pygame.image.load("pictures/rune_armor_1.png"))
 
 # item parameters: price, ATK, DMG, DEF, HP, surf
@@ -221,7 +225,7 @@ death_sound = pygame.mixer.Sound("sounds/death.wav")
 speed_sound = pygame.mixer.Sound("sounds/speed.wav")
 tick_sound = pygame.mixer.Sound("sounds/tick.wav")
 source_sound = pygame.mixer.Sound("sounds/source.wav")
-quest_succes_sound = pygame.mixer.Sound("sounds/quest_succes.wav")
+quest_success_sound = pygame.mixer.Sound("sounds/quest_success.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 17)
