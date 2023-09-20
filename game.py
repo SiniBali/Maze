@@ -1148,7 +1148,7 @@ while True:
                     darkness = True
                     new_level_sound.play()
                     maze_fade_in()
-                    boss_defeated = False
+                    boss_defeated = True #False
                     quest_state = "not in progress"
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(4, 7) + maze_level)
