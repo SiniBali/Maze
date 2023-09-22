@@ -953,7 +953,7 @@ def attack(who, action):
 def well():
     global darkness, player_hp, player_gold, magic_shield, maze, outside
     outside = False
-    well_text = (f"End of darkness in cost of {int(player_hp * 0.9)} HP. If you lost, darkness comes back.",
+    well_text = (f"End of darkness in cost of {int(player_hp * 0.9)} HP. If you lost a fight, darkness comes back.",
                  f"Heal for full HP (+{player_max_hp - player_hp}HP).",
                  f"A purse with {int(2.2 ** maze_level) * 15} gold.",
                  "Not now (exit)")
@@ -1011,7 +1011,7 @@ def transition():
                     "center")
             printer(sentence, (WIDTH / 2, HEIGHT / 2 + 55 * number), giant_font, (i, 0, 0), "center")
         pygame.display.update()
-        clock.tick(40)
+        clock.tick(60)
 
 
 def finish():
@@ -1109,12 +1109,12 @@ for y in range(1, dimension - 1, 2):
     if maze[0][y] == "entrance":
         player_position = [0, y]
         break
-"""transition()
+transition()
 pygame.draw.rect(screen, "black", (0, 0, WIDTH, HEIGHT + info_panel_height))
 printer("Gift of the Gods:", (WIDTH / 2, HEIGHT / 2 - 70), big_font, "white", "center")
 gift_of_gods()
 new_level_sound.play()
-maze_fade_in()"""
+maze_fade_in()
 
 while True:
     frame += 0.02
@@ -1147,7 +1147,7 @@ while True:
                     darkness = True
                     new_level_sound.play()
                     maze_fade_in()
-                    boss_defeated = True  # False
+                    boss_defeated = False
                     quest_state = "not in progress"
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(4, 7) + maze_level)
