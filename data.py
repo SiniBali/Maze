@@ -2,7 +2,7 @@ import pygame
 
 pygame.init()
 
-dimension = 19  # must be odd!
+dimension = 19
 tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
@@ -25,12 +25,13 @@ darkness = True
 boss_defeated = False
 quest_state = "not in progress"
 mirror = False
+power = 1
 magic_shield = 0
 freezing = False
 speed = False
 focus = "indicator"
-ghost = False
 frame = 0
+difficulty = "easy"
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
@@ -38,13 +39,19 @@ entrance_surf = pygame.image.load("pictures/entrance.png")
 exit_surf = pygame.image.load("pictures/exit.png")
 grid_surf = pygame.image.load("pictures/grid.png")
 player_surf = (pygame.image.load("pictures/player_0.png"), pygame.image.load("pictures/player_1.png"))
-coin_surf = pygame.image.load("pictures/coin.png")
-health_surf = pygame.image.load("pictures/health.png")
-well_surf = (pygame.image.load("pictures/well_0.png"), pygame.image.load("pictures/well_1.png"))
+coin_surf = (pygame.image.load("pictures/coin_0.png"),
+             pygame.image.load("pictures/coin_1.png"))
+health_surf = (pygame.image.load("pictures/health_0.png"),
+               pygame.image.load("pictures/health_1.png"))
+well_surf = (pygame.image.load("pictures/well_0.png"),
+             pygame.image.load("pictures/well_1.png"))
 shop_surf = pygame.image.load("pictures/shop.png")
-source_surf = (pygame.image.load("pictures/source_0.png"), pygame.image.load("pictures/source_1.png"))
+source_surf = (pygame.image.load("pictures/source_0.png"),
+               pygame.image.load("pictures/source_1.png"))
 black_surf = pygame.image.load("pictures/black.png")
-mask_surf = pygame.image.load("pictures/mask.png")
+mask_surf = (pygame.image.load("pictures/mask_0.png"),
+             pygame.image.load("pictures/mask_1.png"),
+             pygame.image.load("pictures/mask_2.png"))
 maze_surf = pygame.image.load("pictures/maze.png")
 rat_surf = pygame.image.load("pictures/rat.png")
 pearl_surf = pygame.image.load("pictures/pearl.png")
@@ -60,6 +67,8 @@ gate_surf = pygame.image.load("pictures/gate.png")
 finish_surf = pygame.image.load("pictures/finish.png")
 magic_shield_surf = pygame.image.load("pictures/magic_shield.png")
 shop_exit_surf = pygame.image.load("pictures/shop_exit.png")
+info_panel_surf = pygame.image.load("pictures/info_panel.png")
+gift_panel_surf = pygame.image.load("pictures/gift_panel.png")
 
 monster1_surf = (pygame.image.load("pictures/monster1_0.png"), pygame.image.load("pictures/monster1_1.png"))
 monster2_surf = (pygame.image.load("pictures/monster2_0.png"), pygame.image.load("pictures/monster2_1.png"))
@@ -107,21 +116,28 @@ rune_engraved_surf = pygame.image.load("pictures/rune_engraved.png")
 holy_aegis_surf = pygame.image.load("pictures/holy_aegis.png")
 crystal_tower_surf = pygame.image.load("pictures/crystal_tower.png")
 
-rag_suit_surf = (pygame.image.load("pictures/rag_suit_0.png"), pygame.image.load("pictures/rag_suit_1.png"))
-linen_cloth_surf = (pygame.image.load("pictures/linen_cloth_0.png"), pygame.image.load("pictures/linen_cloth_1.png"))
-chain_shirt_surf = (pygame.image.load("pictures/chain_shirt_0.png"), pygame.image.load("pictures/chain_shirt_1.png"))
-steel_protector_surf = (
-    pygame.image.load("pictures/steel_protector_0.png"), pygame.image.load("pictures/steel_protector_1.png"))
-shadow_cloak_surf = (pygame.image.load("pictures/shadow_cloak_0.png"), pygame.image.load("pictures/shadow_cloak_1.png"))
-venom_chainmail_surf = (
-    pygame.image.load("pictures/venom_chainmail_0.png"), pygame.image.load("pictures/venom_chainmail_1.png"))
-flame_safeguard_surf = (
-    pygame.image.load("pictures/flame_safeguard_0.png"), pygame.image.load("pictures/flame_safeguard_1.png"))
-golden_mail_surf = (pygame.image.load("pictures/golden_mail_0.png"), pygame.image.load("pictures/golden_mail_1.png"))
-holy_armor_surf = (pygame.image.load("pictures/holy_armor_0.png"), pygame.image.load("pictures/holy_armor_1.png"))
-crystal_plate_surf = (
-    pygame.image.load("pictures/crystal_plate_0.png"), pygame.image.load("pictures/crystal_plate_1.png"))
-rune_armor_surf = (pygame.image.load("pictures/rune_armor_0.png"), pygame.image.load("pictures/rune_armor_1.png"))
+rag_suit_surf = (pygame.image.load("pictures/rag_suit_0.png"),
+                 pygame.image.load("pictures/rag_suit_1.png"))
+linen_cloth_surf = (pygame.image.load("pictures/linen_cloth_0.png"),
+                    pygame.image.load("pictures/linen_cloth_1.png"))
+chain_shirt_surf = (pygame.image.load("pictures/chain_shirt_0.png"),
+                    pygame.image.load("pictures/chain_shirt_1.png"))
+steel_protector_surf = (pygame.image.load("pictures/steel_protector_0.png"),
+                        pygame.image.load("pictures/steel_protector_1.png"))
+shadow_cloak_surf = (pygame.image.load("pictures/shadow_cloak_0.png"),
+                     pygame.image.load("pictures/shadow_cloak_1.png"))
+venom_chainmail_surf = (pygame.image.load("pictures/venom_chainmail_0.png"),
+                        pygame.image.load("pictures/venom_chainmail_1.png"))
+flame_safeguard_surf = (pygame.image.load("pictures/flame_safeguard_0.png"),
+                        pygame.image.load("pictures/flame_safeguard_1.png"))
+golden_mail_surf = (pygame.image.load("pictures/golden_mail_0.png"),
+                    pygame.image.load("pictures/golden_mail_1.png"))
+holy_armor_surf = (pygame.image.load("pictures/holy_armor_0.png"),
+                   pygame.image.load("pictures/holy_armor_1.png"))
+crystal_plate_surf = (pygame.image.load("pictures/crystal_plate_0.png"),
+                      pygame.image.load("pictures/crystal_plate_1.png"))
+rune_armor_surf = (pygame.image.load("pictures/rune_armor_0.png"),
+                   pygame.image.load("pictures/rune_armor_1.png"))
 
 # item parameters: price, ATK, DMG, DEF, HP, surf
 gears = (("Rusty Dagger", (0, 12, 75, 0, 0), rusty_dagger_surf),
@@ -172,12 +188,11 @@ spell_mirror_surf = pygame.image.load("pictures/spell_mirror.png")
 spell_magic_shield_surf = pygame.image.load("pictures/spell_magic_shield.png")
 spell_freezing_surf = pygame.image.load("pictures/spell_freezing.png")
 spell_power_surf = pygame.image.load("pictures/spell_double_damage.png")
-spell_ghost_surf = pygame.image.load("pictures/spell_ghost.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
 spell_speed_surf = pygame.image.load("pictures/spell_haste.png")
-spells_inventory = {"BLEEDING": 0, "HEALING": 0, "MIRROR": 0, "MAGIC SHIELD": 0, "FREEZING": 0,
-                    "POWER": 0, "GHOST": 0, "DEATH": 0, "THIEF": 0, "SPEED": 0}
+spells_inventory = {"BLEEDING": 10, "HEALING": 10, "MIRROR": 10, "MAGIC SHIELD": 10, "FREEZING": 110,
+                    "POWER": 10, "DEATH": 10, "THIEF": 10, "SPEED": 10}
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -228,7 +243,7 @@ source_sound = pygame.mixer.Sound("sounds/source.wav")
 quest_success_sound = pygame.mixer.Sound("sounds/quest_success.wav")
 
 font = "fonts/Kingthings Petrock.ttf"
-small_font = pygame.font.Font(font, 17)
+small_font = pygame.font.Font(font, 20)
 normal_font = pygame.font.Font(font, 22)
 big_font = pygame.font.Font(font, 27)
 giant_font = pygame.font.Font(font, 36)
