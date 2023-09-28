@@ -2,16 +2,6 @@ from random import choice, randrange
 from data import *
 
 
-def item_placement(matrix, amount, name):
-    counter = 0
-    while counter != amount:
-        random_x = randrange(1, dimension - 1)
-        random_y = randrange(1, dimension - 1)
-        if matrix[random_x][random_y] == "room":
-            matrix[random_x][random_y] = name
-            counter += 1
-
-
 def maze_generator():
     entrance_door_position = (0, randrange(1, dimension - 1, 2))
     exit_door_position = (dimension - 1, randrange(1, dimension - 1, 2))
@@ -71,12 +61,5 @@ def maze_generator():
                 adjacent.append((new_room[0] + 2, new_room[1]))
     matrix[entrance_door_position[0]][entrance_door_position[1]] = "entrance"
     matrix[exit_door_position[0]][exit_door_position[1]] = "exit"
-    item_placement(matrix, monster_amount, "monster")
-    item_placement(matrix, coin_amount, "coin")
-    item_placement(matrix, potion_amount, "health")
-    item_placement(matrix, well_amount, "well")
-    item_placement(matrix, shop_amount, "shop")
-    item_placement(matrix, boss_amount, "boss")
-    item_placement(matrix, source_amount, "source")
 
     return matrix

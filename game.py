@@ -5,7 +5,7 @@ import pygame
 import pickle
 
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT + info_panel_height))
+screen = pygame.display.set_mode((WIDTH, HEIGHT + info_panel_height), pygame.NOFRAME)
 pygame.display.set_caption("Maze of fear")
 clock = pygame.time.Clock()
 
@@ -33,6 +33,16 @@ def draw_rect_alpha(surface, color, rect):
     shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
     pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
     surface.blit(shape_surf, rect)
+
+
+def item_placement(matrix, amount, name):
+    counter = 0
+    while counter != amount:
+        random_x = randrange(1, dimension - 1)
+        random_y = randrange(1, dimension - 1)
+        if matrix[random_x][random_y] == "room":
+            matrix[random_x][random_y] = name
+            counter += 1
 
 
 def draw_map():
@@ -374,11 +384,11 @@ def shopping():
                 draw_player((15 * tile_size, 1 * tile_size + info_panel_height + 8),
                             r_hand_surf, l_hand_surf, body_surf, 3, int(frame))
             elif selected == 3:
-                screen.blit(pygame.transform.scale(health_surf[int(frame)], (96, 96)),
+                screen.blit(pygame.transform.scale(health_surf[1], (96, 96)),
                             (15 * tile_size, 1 * tile_size + info_panel_height + 8))
             elif selected == 4:
                 screen.blit(pygame.transform.scale(quest[2], (96, 96)),
-                            (15 * tile_size, 1 * tile_size + info_panel_height + 8 + 3 * int(frame)))
+                            (15 * tile_size, 1 * tile_size + info_panel_height + 8))
             elif selected == 5:
                 screen.blit(pygame.transform.scale(shop_exit_surf, (96, 96)),
                             (15 * tile_size, 1 * tile_size + info_panel_height + 8))
@@ -427,29 +437,74 @@ def maze_fade_in():
 
 
 def main_menu():
+    first_time = False
+    sure = False
     text = []
     pygame.mixer.music.load("sounds/menu.wav")
     pygame.mixer.music.play(-1)
-    if load_game_state("save.pickle"):
-        text.append("Continue")
-    text.extend(["New game (easy)", "New game (normal)", "New game (nightmare)"])
-    menu = True
+    game_state = load_game_state("save.pickle")
+    if game_state:
+        difficulty = game_state[13]
+        print(game_state)
+        level = game_state[2]
+        text.append(f"Continue (maze level {level} / {difficulty})")
+        pointer = 0
+    else:
+        text.append("Press SPACE to start")
+        difficulty = "easy"
+        pointer = 1
+        first_time = True
+    text.append("New game (easy)")
+    if difficulty == "easy":
+        text.extend(["New game (normal) - finish on easy first", "New game (nightmare) - finish on normal first"])
+    elif difficulty == "normal":
+        text.extend(["New game (normal)", "New game (nightmare) - finish on normal first"])
+    elif difficulty == "nightmare":
+        text.extend(["New game (normal)", "New game (nightmare)"])
     counter = 0
-    pointer = 0
-    while menu:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and sure:
+                    text[temp[0]] = temp[1]
+                    sure = False
                 if event.key == pygame.K_DOWN and pointer < 3:
                     pointer += 1
+                    if sure:
+                        text[temp[0]] = temp[1]
+                        sure = False
                 if event.key == pygame.K_UP and pointer > 0:
                     pointer -= 1
+                    if first_time and pointer == 0:
+                        pointer = 1
+                    if sure:
+                        text[temp[0]] = temp[1]
+                        sure = False
+
                 if event.key == pygame.K_SPACE:
-                    if text[pointer] == "Continue":
-                        return "Load"
-                    else:
-                        return "New game"
+                    if pointer == 0:
+                        return "Load", difficulty
+                    elif pointer == 1:
+                        if sure or first_time:
+                            return "New game", "easy"
+                        else:
+                            temp = (1, text[1])
+                            text[1] = "Are you sure? Your save will lost!"
+                            sure = True
+                    elif pointer == 2 and difficulty in ("normal", "nightmare"):
+                        if sure:
+                            return "New game", "normal"
+                        else:
+                            temp = (2, text[2])
+                            text[2] = "Are you sure? Your save will lost!"
+                    elif pointer == 3 and difficulty == "nightmare":
+                        if sure:
+                            return "New game", "nightmare"
+                        else:
+                            temp = (3, text[3])
+                            text[3] = "Are you sure? Your save will lost!"
         for x in range(dimension):
             for y in range(dimension + 1):
                 place = (x * tile_size, y * tile_size)
@@ -472,10 +527,10 @@ def main_menu():
         for number, line in enumerate(text):
             if number == pointer:
                 printer(line, (WIDTH / 2 + 2, 510 + 35 * number), giant_font, "black", "center")
-                printer(line, (WIDTH / 2 - 3, 507 + 35 * number), giant_font, "red", "center")
+                printer(line, (WIDTH / 2 - 2, 506 + 35 * number), giant_font, "darkred", "center")
             else:
-                printer(line, (WIDTH / 2 + 2, 510 + 35 * number), big_font, "black", "center")
-                printer(line, (WIDTH / 2, 510 + 35 * number), big_font, "darkred", "center")
+                printer(line, (WIDTH / 2 + 2, 510 + 35 * number), big_font, "darkred", "center")
+                printer(line, (WIDTH / 2, 508 + 35 * number), big_font, "black", "center")
 
         pygame.display.update()
         counter += 0.25
@@ -963,7 +1018,6 @@ def well():
                     if selected > 0:
                         selected -= 1
                 if well_event.key == pygame.K_SPACE:
-                    #outside = True
                     if selected == 0:
                         win_sound.play()
                         darkness = False
@@ -1070,10 +1124,31 @@ def gift_of_gods():
 
 
 start_game = main_menu()
+print(start_game)
 pygame.mixer.music.load("sounds/bg_sound.wav")
 pygame.mixer.music.play(-1)
-if start_game == "New game":
+shop_list = new_shop_list()
+if start_game[1] == "easy":
+    monster_amount = 4
+    potion_amount = 4
+    source_amount = 2
+elif start_game[1] == "normal":
+    monster_amount = 8
+    potion_amount = 6
+    source_amount = 3
+elif start_game[1] == "nightmare":
+    monster_amount = 16
+    potion_amount = 10
+    source_amount = 4
+if start_game[0] == "New game":
     maze = maze_generator()
+    item_placement(maze, monster_amount, "monster")
+    item_placement(maze, coin_amount, "coin")
+    item_placement(maze, potion_amount, "health")
+    item_placement(maze, well_amount, "well")
+    item_placement(maze, shop_amount, "shop")
+    item_placement(maze, boss_amount, "boss")
+    item_placement(maze, source_amount, "source")
     quest = choice(quests)
     quest_item_quantity = int(randrange(4, 7) + maze_level)
     for y in range(1, dimension - 1, 2):
@@ -1085,7 +1160,8 @@ if start_game == "New game":
     printer("Gift of the Gods:", (WIDTH / 2, HEIGHT / 2 - 70), big_font, "white", "center")
     gift_of_gods()
     new_level_sound.play()
-elif start_game == "Load":
+    darkness = True
+elif start_game[0] == "Load":
     game_state = load_game_state('save.pickle')
     maze = game_state[0]
     player_position = game_state[1]
@@ -1101,7 +1177,6 @@ elif start_game == "Load":
     quest_item_quantity = game_state[11]
     quest = quests[game_state[12]]
     difficulty = game_state[13]
-shop_list = new_shop_list()
 monster_atk = int(gears[maze_level + 10][1][3] * 1.5)  # 150% of player DEF (before buy gears in the shop)
 monster_def = int(gears[maze_level - 1][1][1] * 0.5)  # 50% of player ATK
 monster_dmg = int(gears[maze_level + 21][1][4] * 0.8)  # 80% of player HP
@@ -1125,13 +1200,32 @@ while True:
                 game_state = (maze, player_position, maze_level, player_gold, darkness,
                               (gears.index(wears[0]), gears.index(wears[1]), gears.index(wears[2])),
                               spells_inventory, player_hp, magic_shield, boss_defeated, quest_state,
-                              quest_item_quantity, quests.index(quest), difficulty)
+                              quest_item_quantity, quests.index(quest), start_game[1])
                 save_game_state(game_state, "save.pickle")
                 start_game = main_menu()
                 pygame.mixer.music.load("sounds/bg_sound.wav")
                 pygame.mixer.music.play(-1)
-                if start_game == "New game":
+                if start_game[0] == "New game":
+                    if start_game[1] == "easy":
+                        monster_amount = 4
+                        potion_amount = 4
+                        source_amount = 2
+                    elif start_game[1] == "normal":
+                        monster_amount = 8
+                        potion_amount = 6
+                        source_amount = 3
+                    elif start_game[1] == "nightmare":
+                        monster_amount = 16
+                        potion_amount = 10
+                        source_amount = 4
                     maze = maze_generator()
+                    item_placement(maze, monster_amount, "monster")
+                    item_placement(maze, coin_amount, "coin")
+                    item_placement(maze, potion_amount, "health")
+                    item_placement(maze, well_amount, "well")
+                    item_placement(maze, shop_amount, "shop")
+                    item_placement(maze, boss_amount, "boss")
+                    item_placement(maze, source_amount, "source")
                     quest = choice(quests)
                     quest_item_quantity = int(randrange(4, 7) + maze_level)
                     for y in range(1, dimension - 1, 2):
@@ -1143,7 +1237,8 @@ while True:
                     printer("Gift of the Gods:", (WIDTH / 2, HEIGHT / 2 - 70), big_font, "white", "center")
                     gift_of_gods()
                     new_level_sound.play()
-                elif start_game == "Load":
+                    darkness = True
+                elif start_game[0] == "Load":
                     game_state = load_game_state('save.pickle')
                     maze = game_state[0]
                     player_position = game_state[1]
@@ -1191,6 +1286,13 @@ while True:
                         pygame.mixer.music.play(-1)
                     transition()
                     maze = maze_generator()
+                    item_placement(maze, monster_amount, "monster")
+                    item_placement(maze, coin_amount, "coin")
+                    item_placement(maze, potion_amount, "health")
+                    item_placement(maze, well_amount, "well")
+                    item_placement(maze, shop_amount, "shop")
+                    item_placement(maze, boss_amount, "boss")
+                    item_placement(maze, source_amount, "source")
                     darkness = True
                     new_level_sound.play()
                     boss_defeated = False

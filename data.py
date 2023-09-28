@@ -7,12 +7,9 @@ tile_size = 32
 info_panel_height = tile_size
 WIDTH = dimension * tile_size
 HEIGHT = dimension * tile_size
-monster_amount = 7
 boss_amount = 1
-coin_amount = 7
-potion_amount = 7
+coin_amount = 8
 well_amount = 1
-source_amount = 2
 shop_amount = 1
 maze_level = 1
 player_gold = 0
@@ -31,7 +28,6 @@ freezing = False
 speed = False
 focus = "indicator"
 frame = 0
-difficulty = "easy"
 
 tile_surf = pygame.image.load("pictures/tile.png")
 wall_surf = pygame.image.load("pictures/wall.png")
@@ -245,8 +241,8 @@ quest_success_sound = pygame.mixer.Sound("sounds/quest_success.wav")
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 20)
 normal_font = pygame.font.Font(font, 22)
-big_font = pygame.font.Font(font, 27)
-giant_font = pygame.font.Font(font, 36)
+big_font = pygame.font.Font(font, 26)
+giant_font = pygame.font.Font(font, 34)
 
 monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
                  monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)
