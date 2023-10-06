@@ -172,9 +172,7 @@ gears = (("Rusty Dagger", (0, 12, 75, 0, 0), rusty_dagger_surf),
          ("Holy Armor", (27000, 0, 0, 0, 1600), holy_armor_surf),
          ("Crystal Plate", (43500, 0, 0, 0, 2500), crystal_plate_surf))
 
-wears = [gears[0],
-         gears[11],
-         gears[22]]
+wears = [gears[0], gears[11], gears[22]]
 
 player_hp = wears[2][1][4]
 
@@ -187,8 +185,8 @@ spell_power_surf = pygame.image.load("pictures/spell_double_damage.png")
 spell_death_surf = pygame.image.load("pictures/spell_death.png")
 spell_pickpocket_surf = pygame.image.load("pictures/spell_pickpocket.png")
 spell_speed_surf = pygame.image.load("pictures/spell_haste.png")
-spells_inventory = {"BLEEDING": 10, "HEALING": 10, "MIRROR": 10, "MAGIC SHIELD": 10, "FREEZING": 110,
-                    "POWER": 10, "DEATH": 10, "THIEF": 10, "SPEED": 10}
+spells_inventory = {"BLEEDING": 0, "HEALING": 0, "MIRROR": 0, "MAGIC SHIELD": 0, "FREEZING": 0,
+                    "POWER": 0, "DEATH": 0, "THIEF": 0, "SPEED": 0}
 
 quests = (("Too many rats are here.", "rat", rat_surf),
           ("My pearls are rolled away.", "pearl", pearl_surf),
@@ -241,8 +239,8 @@ quest_success_sound = pygame.mixer.Sound("sounds/quest_success.wav")
 font = "fonts/Kingthings Petrock.ttf"
 small_font = pygame.font.Font(font, 20)
 normal_font = pygame.font.Font(font, 22)
-big_font = pygame.font.Font(font, 26)
-giant_font = pygame.font.Font(font, 34)
+big_font = pygame.font.Font(font, 25)
+giant_font = pygame.font.Font(font, 32)
 
 monster_surfs = (monster1_surf, monster2_surf, monster3_surf, monster4_surf, monster5_surf,
                  monster6_surf, monster7_surf, monster8_surf, monster9_surf, monster10_surf)

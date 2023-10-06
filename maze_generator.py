@@ -2,13 +2,13 @@ from random import choice, randrange
 from data import *
 
 
-def maze_generator():
-    entrance_door_position = (0, randrange(1, dimension - 1, 2))
-    exit_door_position = (dimension - 1, randrange(1, dimension - 1, 2))
+def maze_generator(maze_size):
+    entrance_door_position = (0, randrange(1, maze_size - 1, 2))
+    exit_door_position = (maze_size - 1, randrange(1, maze_size - 1, 2))
     matrix = []
     row = []
-    for x in range(dimension):
-        for y in range(dimension):
+    for x in range(maze_size):
+        for y in range(maze_size):
             row.append("wall")  # walls everywhere
         matrix.append(row)
         row = []
@@ -17,14 +17,14 @@ def maze_generator():
     adjacent = [(starting_cell_x + 2, starting_cell_y)]
     if starting_cell_y != 1:
         adjacent.append((starting_cell_x, starting_cell_y - 2))
-    if starting_cell_y != dimension - 2:
+    if starting_cell_y != maze_size - 2:
         adjacent.append((starting_cell_x, starting_cell_y + 2))
     matrix[starting_cell_x][starting_cell_y] = "room"
     while adjacent:
         new_room = choice(adjacent)
         matrix[new_room[0]][new_room[1]] = "room"
         neighbor_rooms = []
-        if new_room[1] < dimension - 2:
+        if new_room[1] < maze_size - 2:
             if matrix[new_room[0]][new_room[1] + 2] == "room":
                 neighbor_rooms.append("up")
         if new_room[1] > 1:
@@ -33,7 +33,7 @@ def maze_generator():
         if new_room[0] > 1:
             if matrix[new_room[0] - 2][new_room[1]] == "room":
                 neighbor_rooms.append("left")
-        if new_room[0] < dimension - 2:
+        if new_room[0] < maze_size - 2:
             if matrix[new_room[0] + 2][new_room[1]] == "room":
                 neighbor_rooms.append("right")
         if neighbor_rooms:
@@ -47,7 +47,7 @@ def maze_generator():
             elif carving_direction == "right":
                 matrix[new_room[0] + 1][new_room[1]] = "room"
         adjacent.remove((new_room[0], new_room[1]))
-        if new_room[1] < dimension - 2:
+        if new_room[1] < maze_size - 2:
             if matrix[new_room[0]][new_room[1] + 2] == "wall" and (new_room[0], new_room[1] + 2) not in adjacent:
                 adjacent.append((new_room[0], new_room[1] + 2))
         if new_room[1] > 1:
@@ -56,7 +56,7 @@ def maze_generator():
         if new_room[0] > 1:
             if matrix[new_room[0] - 2][new_room[1]] == "wall" and (new_room[0] - 2, new_room[1]) not in adjacent:
                 adjacent.append((new_room[0] - 2, new_room[1]))
-        if new_room[0] < dimension - 2:
+        if new_room[0] < maze_size - 2:
             if matrix[new_room[0] + 2][new_room[1]] == "wall" and (new_room[0] + 2, new_room[1]) not in adjacent:
                 adjacent.append((new_room[0] + 2, new_room[1]))
     matrix[entrance_door_position[0]][entrance_door_position[1]] = "entrance"
